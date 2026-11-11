@@ -1,0 +1,1900 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Free rooftop solar layout planner for Indian homes and flats: panels, strings, wiring, no-drill ballast, shade from trees, cost and a vendor brief.">
+<style>:root{padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Solar Layout Planner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#f4f1ea; --panel:#fbfaf6; --panel2:#efebe1; --ink:#1c2128; --ink2:#4a5360; --ink3:#78808c;
+  --line:#d9d3c4; --line2:#c6bfad; --accent:#1f5fbf; --accent-ink:#ffffff; --sun:#c97a00;
+  --ok:#1d7a46; --okbg:#e0f0e5; --warn:#8a5a00; --warnbg:#fbefcf; --fail:#a1262b; --failbg:#f8dfdf;
+  --input:#ffffff; --shadow:0 1px 0 rgba(28,33,40,.04),0 8px 24px -16px rgba(28,33,40,.25);
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161b; --panel:#1a2027; --panel2:#222a33; --ink:#e7eaee; --ink2:#aab2bd; --ink3:#828b97;
+  --line:#2e3742; --line2:#3b4654; --accent:#6ea2ff; --accent-ink:#0b1220; --sun:#f0a63a;
+  --ok:#6fd49a; --okbg:#1b3327; --warn:#f0c15a; --warnbg:#3a2f14; --fail:#ff8b8f; --failbg:#3d1d20;
+  --input:#11151a; --shadow:none; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12161b; --panel:#1a2027; --panel2:#222a33; --ink:#e7eaee; --ink2:#aab2bd; --ink3:#828b97;
+  --line:#2e3742; --line2:#3b4654; --accent:#6ea2ff; --accent-ink:#0b1220; --sun:#f0a63a;
+  --ok:#6fd49a; --okbg:#1b3327; --warn:#f0c15a; --warnbg:#3a2f14; --fail:#ff8b8f; --failbg:#3d1d20;
+  --input:#11151a; --shadow:none; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1500px;margin:0 auto}
+header.top{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:18px 0 14px;border-bottom:1px solid var(--line)}
+.brand{display:flex;gap:12px;align-items:center;min-width:0}
+.logo{width:34px;height:34px;flex:none}
+.brand h1{font-size:20px}
+.brand p{margin:0;color:var(--ink2);font-size:12.5px}
+.seg{display:inline-flex;align-self:flex-start;width:fit-content;max-width:100%;border:1px solid var(--line2);border-radius:8px;overflow:hidden;background:var(--input)}
+.seg button{border:0;background:transparent;padding:6px 12px;cursor:pointer;color:var(--ink2);font-size:13px;white-space:nowrap}
+.seg button+button{border-left:1px solid var(--line2)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.app{display:grid;grid-template-columns:minmax(320px,400px) minmax(0,1fr);gap:20px;align-items:start;margin-top:18px}
+@media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}.out{order:-1}.jump{display:inline-flex!important}}
+.jump{display:none;align-self:flex-start}
+.inputs{display:flex;flex-direction:column;gap:10px;min-width:0}
+details.sec{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+details.sec>summary{list-style:none;cursor:pointer;padding:11px 14px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:8px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"+";font-family:var(--mono);color:var(--ink3);font-size:16px}
+details.sec[open]>summary::after{content:"\2212"}
+details.sec>summary .n{font-family:var(--mono);color:var(--sun);margin-right:8px;font-weight:500}
+.sec .body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 10px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 8px}
+.f{display:flex;flex-direction:column;gap:3px;min-width:0}
+.f>span.l{font-size:11.5px;color:var(--ink2);letter-spacing:.01em}
+.f small{color:var(--ink3);font-size:11.5px;line-height:1.35}
+input[type=number],input[type=text],select,textarea{width:100%;min-width:0;background:var(--input);border:1px solid var(--line2);border-radius:6px;padding:6px 8px;font-size:13.5px}
+input[type=number]{font-family:var(--mono);font-size:13px}
+textarea{resize:vertical;min-height:70px;font-family:var(--mono);font-size:12px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.chk{display:flex;gap:8px;align-items:center;font-size:13px}
+.chk input{width:16px;height:16px;accent-color:var(--accent)}
+.btn{border:1px solid var(--line2);background:var(--input);padding:6px 11px;border-radius:7px;cursor:pointer;font-size:13px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.sm{padding:3px 8px;font-size:12px}
+.btn[disabled]{opacity:.5;cursor:default}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.card{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:var(--panel2);display:flex;flex-direction:column;gap:8px;min-width:0}
+.card .hd{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.card .hd b{font-size:12.5px}
+.hint{color:var(--ink2);font-size:12.5px;margin:0}
+.note{font-size:12px;color:var(--ink3);margin:0}
+.mini{font-size:12px;color:var(--ink2)}
+.out{min-width:0;display:flex;flex-direction:column;gap:14px}
+.tabs{display:flex;gap:2px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:transparent;padding:9px 13px;cursor:pointer;color:var(--ink2);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;font-size:13.5px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--sun);font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow);min-width:0}
+.kpi .k{font-size:11.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:.07em}
+.kpi .v{font-family:var(--mono);font-size:24px;font-weight:500;margin-top:2px;line-height:1.15;word-break:break-word}
+.kpi .v small{font-size:13px;color:var(--ink2);margin-left:3px}
+.kpi .s{font-size:12px;color:var(--ink2);margin-top:3px}
+.panelbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:var(--shadow);min-width:0}
+.panelbox h2{font-size:15px;margin-bottom:8px}
+.panelbox h3{font-size:13px;margin:14px 0 6px}
+.checks{display:flex;flex-direction:column;gap:6px}
+.ck{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;padding:8px 10px;border-radius:8px;border:1px solid transparent}
+.ck .ic{font-family:var(--mono);font-weight:700;text-align:center}
+.ck b{font-weight:600}
+.ck p{margin:1px 0 0;color:var(--ink2);font-size:12.5px}
+.ck.ok{background:var(--okbg)} .ck.ok .ic{color:var(--ok)}
+.ck.warn{background:var(--warnbg)} .ck.warn .ic{color:var(--warn)}
+.ck.fail{background:var(--failbg);border-color:var(--fail)} .ck.fail .ic{color:var(--fail)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line2);background:var(--input);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;font-family:var(--mono)}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.no{opacity:.55;border-style:dashed}
+.sheet{background:#fff;border:1px solid var(--line2);border-radius:6px;overflow:hidden;line-height:0}
+.sheet svg{display:block;width:100%;height:auto}
+.sheet.pick{cursor:crosshair;outline:2px dashed var(--sun)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);font-weight:600;white-space:nowrap}
+td.n,th.n{text-align:right;font-family:var(--mono);white-space:nowrap}
+tr.tot td{font-weight:700;border-top:2px solid var(--line2)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--ink2);margin-top:8px}
+.tool{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px}
+.cl{display:flex;flex-direction:column;gap:2px}
+.cl h3{margin-top:14px}
+.cl label{display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:13px;cursor:pointer}
+.cl label input{width:16px;height:16px;margin-top:2px;accent-color:var(--accent)}
+.cl label span b{font-weight:600}
+.cl label span em{display:block;font-style:normal;color:var(--ink2);font-size:12.5px}
+.msg{padding:8px 10px;border-radius:8px;font-size:12.5px;background:var(--panel2);border:1px solid var(--line)}
+.msg.bad{background:var(--failbg);border-color:var(--fail)}
+.msg.good{background:var(--okbg)}
+.thumb{max-width:100%;max-height:160px;border-radius:6px;border:1px solid var(--line)}
+.disc{font-size:12px;color:var(--ink3);margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.pill{display:inline-block;font-family:var(--mono);font-size:11px;padding:1px 7px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--ink2)}
+@media (max-width:520px){.grid3{grid-template-columns:1fr 1fr}.grid4{grid-template-columns:1fr 1fr}.kpi .v{font-size:21px}}
+</style>
+</head><body>
+<style>
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:min(560px,calc(100vw - 32px));background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:9px;font-size:13px;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,.35)}
+#toast[hidden]{display:none}
+</style>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="31" cy="9" r="5" fill="var(--sun)"/>
+        <g stroke="var(--sun)" stroke-width="1.6" stroke-linecap="round"><path d="M31 0.5v2.2M31 15.3v2.2M22.5 9h2.2M37.3 9h2.2M25 3l1.6 1.6M35.4 13.4L37 15M37 3l-1.6 1.6M26.6 13.4L25 15"/></g>
+        <g fill="var(--accent)" stroke="var(--bg)" stroke-width="1"><path d="M3 34l5-12h12l-5 12z"/><path d="M17 34l5-12h12l-5 12z" opacity=".75"/></g>
+      </svg>
+      <div>
+        <h1>Solar Layout Planner</h1>
+        <p>Give it the roof and the size you want. It lays out panels, strings, wiring, ballast and cost.</p>
+      </div>
+    </div>
+    <div class="seg" data-seg="mode" role="group" aria-label="Project type">
+      <button type="button" data-v="retrofit">Retrofit (existing home)</button>
+      <button type="button" data-v="new">New home</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="inputs" aria-label="Inputs"><button class="btn jump" type="button" data-act="to-results">↑ Back to results</button><div id="inputs" style="display:contents"></div></aside>
+    <section class="out" aria-label="Results">
+      <button class="btn jump" type="button" data-act="to-inputs">Change roof and size ↓</button>
+      <div id="kpis" class="kpis"></div>
+      <div class="tabs" id="tabs" role="tablist" aria-label="Result views"></div>
+      <div id="view" role="tabpanel"></div>
+    </section>
+  </main>
+
+  <p class="disc">Planning-grade tool. Inverter data, city wind speeds, wind coefficients and prices are typical-class values: replace them with the datasheet of the equipment you buy and the signed calculation from your structure supplier and structural engineer. It does not replace a site survey, an IS 875-3 wind design, net-metering approval or the electrical inspector.</p>
+</div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+<script>
+'use strict';
+/* ====== Solar Layout Planner: engine (no DOM) ====== */
+const FT = 0.3048, D2R = Math.PI / 180, SQ3 = Math.sqrt(3);
+
+const PANELS = {
+  waaree625: { name: 'Waaree Elite R BiN-21-625 (DCR, TOPCon, bifacial) - datasheet', Wp: 625, L: 2.382, W: 1.134, kg: 33.8, Voc: 49.30, Isc: 16.07, Vmp: 41.53, Imp: 15.05, bVoc: -0.0026, bP: -0.0030 },
+  g580: { name: 'Typical 580 W TOPCon 2278x1134 (replace with your datasheet)', Wp: 580, L: 2.278, W: 1.134, kg: 32.5, Voc: 52.0, Isc: 14.0, Vmp: 43.7, Imp: 13.28, bVoc: -0.0027, bP: -0.0030 },
+  g545: { name: 'Typical 545 W mono PERC 2279x1134 (replace with your datasheet)', Wp: 545, L: 2.279, W: 1.134, kg: 28.0, Voc: 49.5, Isc: 13.95, Vmp: 41.8, Imp: 13.04, bVoc: -0.0027, bP: -0.0034 },
+  custom: { name: 'Custom (edit the values below)', Wp: 600, L: 2.384, W: 1.134, kg: 32, Voc: 50, Isc: 15, Vmp: 42, Imp: 14.3, bVoc: -0.0026, bP: -0.0030 }
+};
+
+// Typical-class inverter data. Replace with the datasheet of the model you buy.
+function inv(id, name, ph, ac, mppt, vmax, mmin, mmax, imp, isc) { return { id, name, ph, ac, mppt, vmax, mmin, mmax, imp, isc }; }
+const INVERTERS = [
+  inv('s3', '1-phase 3 kW (typical)', 1, 3, 2, 600, 90, 520, 16, 20),
+  inv('s4', '1-phase 4 kW (typical)', 1, 4, 2, 600, 90, 520, 16, 20),
+  inv('s5', '1-phase 5 kW (typical)', 1, 5, 2, 600, 90, 520, 16, 20),
+  inv('s6', '1-phase 6 kW (typical)', 1, 6, 2, 600, 90, 520, 16, 20),
+  inv('t5', '3-phase 5 kW (typical)', 3, 5, 2, 1100, 180, 1000, 16, 20),
+  inv('t6', '3-phase 6 kW (typical)', 3, 6, 2, 1100, 180, 1000, 16, 20),
+  inv('t8', '3-phase 8 kW (typical)', 3, 8, 2, 1100, 180, 1000, 16, 20),
+  inv('t10', '3-phase 10 kW GoodWe GW10K-SDT-30 (as in the drawing set)', 3, 10, 2, 1100, 180, 1000, 22, 30),
+  inv('t12', '3-phase 12 kW (typical)', 3, 12, 2, 1100, 180, 1000, 22, 30),
+  inv('t15', '3-phase 15 kW (typical)', 3, 15, 3, 1100, 180, 1000, 22, 30)
+];
+
+const CITIES = [
+  { n: 'Vadodara', lon: 73.18, lat: 22.31, vb: 44, y: 1450 }, { n: 'Ahmedabad', lon: 72.57, lat: 23.02, vb: 39, y: 1500 }, { n: 'Surat', lon: 72.83, lat: 21.17, vb: 44, y: 1400 },
+  { n: 'Rajkot', lon: 70.8, lat: 22.30, vb: 39, y: 1500 }, { n: 'Mumbai', lon: 72.88, lat: 19.08, vb: 44, y: 1350 }, { n: 'Pune', lon: 73.86, lat: 18.52, vb: 39, y: 1400 },
+  { n: 'Delhi', lon: 77.21, lat: 28.61, vb: 47, y: 1350 }, { n: 'Jaipur', lon: 75.79, lat: 26.91, vb: 47, y: 1500 }, { n: 'Lucknow', lon: 80.95, lat: 26.85, vb: 47, y: 1330 },
+  { n: 'Bengaluru', lon: 77.59, lat: 12.97, vb: 33, y: 1400 }, { n: 'Chennai', lon: 80.27, lat: 13.08, vb: 50, y: 1400 }, { n: 'Hyderabad', lon: 78.48, lat: 17.39, vb: 44, y: 1450 },
+  { n: 'Kolkata', lon: 88.36, lat: 22.57, vb: 50, y: 1250 }, { n: 'Nagpur', lon: 79.09, lat: 21.15, vb: 44, y: 1430 }
+];
+
+const EXAMPLE = {
+ "name": "Example: L-shaped terrace with mango trees, Vadodara",
+ "unit": "ft",
+ "northAngle": 19,
+ "face": "down",
+ "lon": 73.18,
+ "lat": 22.31,
+ "city": "Vadodara",
+ "Vb": 44,
+ "yieldKwp": 1450,
+ "bldgH": 10,
+ "parapetH": 0.3,
+ "cpEdge": 0.8,
+ "bldgType": "home",
+ "consumption": 0,
+ "edges": {
+  "top": {
+   "kind": "railing",
+   "h": 0.3
+  },
+  "right": {
+   "kind": "railing",
+   "h": 0.3
+  },
+  "bottom": {
+   "kind": "railing",
+   "h": 0.3
+  },
+  "left": {
+   "kind": "wall",
+   "h": 1
+  }
+ },
+ "survey": {
+  "roofTape": false,
+  "northMethod": "compass",
+  "northChecked": true,
+  "roofCond": "stains",
+  "drill": "no",
+  "compass": 341,
+  "compassSide": "top"
+ },
+ "photo": {
+  "doy": 315,
+  "hour": 11.533,
+  "label": "Photo time: 11 Nov, 11:32 IST",
+  "date": "2026-11-11",
+  "time": "11:32"
+ },
+ "roof": [
+  {
+   "x": 27,
+   "y": 0,
+   "w": 20.75,
+   "h": 34.5,
+   "mode": "add"
+  },
+  {
+   "x": 18,
+   "y": 0,
+   "w": 9,
+   "h": 15.92,
+   "mode": "add"
+  },
+  {
+   "x": 0,
+   "y": 5.45,
+   "w": 18,
+   "h": 22.75,
+   "mode": "add"
+  }
+ ],
+ "obstacles": [
+  {
+   "name": "Stair cabin",
+   "x": 18,
+   "y": 15.92,
+   "w": 9,
+   "h": 18.58,
+   "h0": 0,
+   "h1": 2.63,
+   "solid": true,
+   "measured": true
+  },
+  {
+   "name": "Tank room on cabin roof",
+   "x": 19.5,
+   "y": 21.45,
+   "w": 6,
+   "h": 7.5,
+   "h0": 2.63,
+   "h1": 4.52,
+   "solid": false,
+   "measured": true
+  },
+  {
+   "name": "Sintex tank on plinth",
+   "x": 43.6,
+   "y": 28,
+   "w": 3.3,
+   "h": 3.3,
+   "h0": 0,
+   "h1": 1.55,
+   "solid": true
+  },
+  {
+   "name": "Basin wall",
+   "x": 47,
+   "y": 23,
+   "w": 0.75,
+   "h": 11.5,
+   "h0": 0,
+   "h1": 1.2,
+   "solid": true
+  },
+  {
+   "name": "Mango tree SE (estimated)",
+   "tree": true,
+   "trimTo": 6,
+   "x": 36,
+   "y": -15,
+   "w": 17,
+   "h": 14,
+   "h0": 2.5,
+   "h1": 9,
+   "solid": false
+  },
+  {
+   "name": "Mango tree E (estimated)",
+   "tree": true,
+   "trimTo": 7,
+   "x": 44.75,
+   "y": -1,
+   "w": 16,
+   "h": 31,
+   "h0": 3,
+   "h1": 9,
+   "solid": false
+  }
+ ],
+ "entry": {
+  "x": 25.25,
+  "y": 15.92
+ },
+ "notes": "Example roof: an L-shaped terrace on a two-storey home in Vadodara, entered from a building drawing, site photos (11 Nov, 11:32 IST) and a phone compass.\n- Edges: a solid wall about 1 m high on the west; open railings on a low kerb (about 0.3 m) elsewhere. A solid basin wall with a small water tank stands on the north part of the east edge.\n- Stair cabin 2.63 m high, with a tank room on top reaching 4.52 m above the terrace (measured).\n- Two mango trees: a tall one at the south-east corner and a big one along the east edge. Around midday in November their shade covers the eastern half of the east part. The canopy can be trimmed but the trees stay. Heights are estimates from photos.\n- The east part is stained from an old terrace garden: scrub it and check the waterproofing before installing. The west part is clean.\n- Heavy leaf litter: plan panel cleaning and drain guards."
+};
+
+
+/* ---------- small geometry helpers ---------- */
+function toFrame(face, x, y) { switch (face) { case 'up': return [-x, -y]; case 'right': return [y, -x]; case 'left': return [-y, x]; default: return [x, y]; } }
+function fromFrame(face, x, y) { switch (face) { case 'up': return [-x, -y]; case 'right': return [-y, x]; case 'left': return [y, -x]; default: return [x, y]; } }
+function rectF(face, r) { // r = {x0,y0,x1,y1} plan -> frame
+  const p = [toFrame(face, r.x0, r.y0), toFrame(face, r.x1, r.y1)];
+  return { x0: Math.min(p[0][0], p[1][0]), y0: Math.min(p[0][1], p[1][1]), x1: Math.max(p[0][0], p[1][0]), y1: Math.max(p[0][1], p[1][1]) };
+}
+function rectP(face, r) {
+  const p = [fromFrame(face, r.x0, r.y0), fromFrame(face, r.x1, r.y1)];
+  return { x0: Math.min(p[0][0], p[1][0]), y0: Math.min(p[0][1], p[1][1]), x1: Math.max(p[0][0], p[1][0]), y1: Math.max(p[0][1], p[1][1]) };
+}
+function hull(pts) {
+  const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo = []; for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  const up = []; for (let i = p.length - 1; i >= 0; i--) { const q = p[i]; while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
+  lo.pop(); up.pop(); return lo.concat(up);
+}
+function inConvex(poly, x, y) {
+  let s = 0; for (let i = 0; i < poly.length; i++) {
+    const a = poly[i], b = poly[(i + 1) % poly.length];
+    const c = (b[0] - a[0]) * (y - a[1]) - (b[1] - a[1]) * (x - a[0]);
+    if (c !== 0) { if (s === 0) s = c > 0 ? 1 : -1; else if ((c > 0 ? 1 : -1) !== s) return false; }
+  } return true;
+}
+function segHitsRect(a, b, r) { // axis-aligned segment vs rect interior
+  const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+  return x1 > r.x0 + 1e-6 && x0 < r.x1 - 1e-6 && y1 > r.y0 + 1e-6 && y0 < r.y1 - 1e-6;
+}
+const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+/* ---------- sun ---------- */
+function sunPos(latDeg, decDeg, hDeg) {
+  const f = latDeg * D2R, d = decDeg * D2R, H = hDeg * D2R;
+  const sa = Math.sin(f) * Math.sin(d) + Math.cos(f) * Math.cos(d) * Math.cos(H);
+  const alt = Math.asin(sa);
+  const az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(f) - Math.tan(d) * Math.cos(f)); // from south, west +
+  return { alt: alt / D2R, bearing: (180 + az / D2R + 360) % 360 };
+}
+function k2for(h) { const t = [[10, 0.91], [15, 0.97], [20, 1.01], [30, 1.06], [50, 1.12]]; if (h <= 10) return 0.91; for (let i = 1; i < t.length; i++) if (h <= t[i][0]) return t[i - 1][1] + (t[i][1] - t[i - 1][1]) * (h - t[i - 1][0]) / (t[i][0] - t[i - 1][0]); return 1.12; }
+
+const STD_MCB = [10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+const AC_AMP = { 4: 30, 6: 38, 10: 52, 16: 70, 25: 92, 35: 112, 50: 135 };
+
+/* ---------- defaults ---------- */
+function defaults() {
+  return {
+    mode: 'retrofit', unit: 'm', northAngle: 0, face: 'down', roof: [], obstacles: [], entry: null,
+    kWp: 5, panel: 'waaree625', custom: null, orient: 'landscape', tilt: 10, city: 'Vadodara', lon: 73.18, lat: 22.31, Vb: 44, yieldKwp: 1450,
+    bldgH: 10, parapetH: 0.9, cFront: 1.0, cSide: 0.6, edgeZone: 1.05, gap: 0.02,
+    supply: '3', inverter: 'auto', acRun: 20, dbRun: 5, inside: 3, la: true,
+    cpInt: 0.4, cpEdge: 0.5, fos: 1.5, blockKg: 25, minBlocks: 3, structKg: 12, shadeThr: 0.05, allowShaded: true,
+    consumption: 0, saveRate: 8.0, exportRate: 2.25,
+    bldgType: 'home', floors: 3, flats: 1, edges: null, subsidy: true, survey: {}, photo: null, notes: ''
+  };
+}
+
+/* ---------- roof edges (per side of the plan) ---------- */
+const SIDES = ['top', 'right', 'bottom', 'left'];
+function edgeOf(cfg, side) {
+  const e = cfg.edges && cfg.edges[side];
+  if (e && e.kind) return { kind: e.kind, h: e.kind === 'none' ? 0 : Math.max(0, +e.h || 0) };
+  return { kind: cfg.parapetH >= 0.6 ? 'wall' : 'railing', h: cfg.parapetH };
+}
+// edge wind coefficient for one side: open railing or no edge = full edge value; a solid wall of 1 m or more halves the extra over interior
+function cpSide(cfg, side) {
+  if (!cfg.edges) return cfg.cpEdge;
+  const e = edgeOf(cfg, side); if (e.kind !== 'wall') return cfg.cpEdge;
+  const f = Math.max(0, Math.min(1, (e.h - 0.3) / 0.7)); return cfg.cpEdge - (cfg.cpEdge - cfg.cpInt) * 0.5 * f;
+}
+function subsidyFor(cfg, kWp) {
+  if (!cfg.subsidy) return 0;
+  if (cfg.bldgType === 'flats') return 18000 * Math.min(kWp, 3 * Math.max(1, cfg.flats || 1), 500);
+  return Math.min(78000, Math.min(kWp, 2) * 30000 + Math.max(0, Math.min(kWp, 3) - 2) * 18000);
+}
+// how complete and measured the site survey is -> accuracy band for yearly units
+function surveyStatus(cfg) {
+  const sv = cfg.survey || {}, u = cfg.unit === 'ft' ? FT : 1, items = [];
+  const add = (k, lvl, t, d) => items.push({ k, lvl, t, d });
+  const inAdd = (x, y) => (cfg.roof || []).some(r => r.mode !== 'cut' && x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h);
+  const obs = cfg.obstacles || [], isTree = o => !!o.tree || /\btree\b/i.test(o.name || '');
+  const near = obs.filter(o => isTree(o) || !inAdd(o.x + o.w / 2, o.y + o.h / 2)), onRoof = obs.filter(o => near.indexOf(o) < 0);
+  const hasRoof = (cfg.roof || []).some(r => r.mode !== 'cut');
+  add('roof', !hasRoof ? 'fail' : sv.roofTape ? 'ok' : 'warn', 'Roof outline with measured sizes', !hasRoof ? 'Add the roof.' : sv.roofTape ? 'Checked with a tape.' : 'Taken from a drawing: check two sides with a tape.');
+  const est = onRoof.filter(o => !o.measured);
+  add('heights', onRoof.length ? (est.length ? 'warn' : 'ok') : (sv.nothingOnRoof ? 'ok' : 'warn'), 'Heights of everything on the roof', onRoof.length ? (est.length ? est.length + ' height(s) estimated: ' + est.map(o => o.name).slice(0, 3).join(', ') + '. Measure with a tape or count stair steps (about 7 in each).' : 'All measured.') : (sv.nothingOnRoof ? 'Nothing stands on the roof.' : 'Add the stair cabin, tanks and walls, or tick that nothing stands on the roof.'));
+  add('north', sv.northMethod && sv.northChecked ? 'ok' : sv.northMethod || sv.northChecked ? 'warn' : 'fail', 'North direction', sv.northMethod && sv.northChecked ? 'Compass reading, checked against a shadow or satellite view.' : sv.northMethod ? 'From a compass only: check it against a timed photo or the satellite view.' : sv.northChecked ? 'Checked, but no compass reading entered.' : 'North is a guess. Use the compass helper in section 1.');
+  add('photo', cfg.photo && cfg.photo.doy ? 'ok' : 'warn', 'A photo of each side, with the time', cfg.photo && cfg.photo.doy ? 'Compare shadows with the Photo time button.' : 'Enter the date and time of your roof photos in the site survey.');
+  add('edges', cfg.edges ? 'ok' : 'warn', 'Edge type for each side', cfg.edges ? 'Set per side.' : 'One parapet height is used for every side. Set wall or railing per side.');
+  const nEst = near.filter(o => !o.measured);
+  add('around', near.length ? (nEst.length ? 'warn' : 'ok') : (sv.clearAround ? 'ok' : 'fail'), 'Trees and buildings around the roof', near.length ? (nEst.length ? nEst.length + ' with estimated size or height.' : 'All measured.') : (sv.clearAround ? 'Nothing tall nearby.' : 'Not checked. Nearby trees can cost 20 % or more of the output.'));
+  add('place', cfg.lat ? 'ok' : 'fail', 'Location and building height', (cfg.city || 'Custom') + ', ' + (cfg.bldgType === 'flats' ? cfg.floors + ' floors, ' : '') + 'roof at about ' + cfg.bldgH + ' m.');
+  add('cond', sv.roofCond && sv.drill ? (sv.roofCond === 'good' ? 'ok' : 'warn') : 'warn', 'Roof type, condition, drilling allowed', !sv.roofCond ? 'Answer the roof condition questions.' : sv.roofCond === 'good' ? 'Roof in good condition.' : sv.roofCond === 'stains' ? 'Stains: scrub and check waterproofing before installing.' : 'Leaks: repair waterproofing first.');
+  add('power', cfg.consumption > 0 ? 'ok' : 'warn', 'Electricity: phase and 12 months of units', cfg.consumption > 0 ? cfg.consumption + ' units a year, ' + (cfg.supply === '1' ? 'single' : 'three') + '-phase.' : 'Add yearly units in section 3.');
+  let band = 0.10;
+  for (const it of items) if (['heights', 'north', 'edges', 'around', 'roof'].includes(it.k)) band += it.lvl === 'warn' ? 0.03 : it.lvl === 'fail' ? 0.07 : 0;
+  if (near.some(o => isTree(o) && !o.measured)) band += 0.03;
+  band = Math.min(0.35, band);
+  const score = items.filter(i => i.lvl === 'ok').length;
+  return { items, band, score, n: items.length };
+}
+
+/* ---------- main computation ---------- */
+function compute(cfg0) {
+  const cfg = Object.assign(defaults(), cfg0);
+  const u = cfg.unit === 'ft' ? FT : 1, face = cfg.face;
+  const P = Object.assign({}, PANELS[cfg.panel] || PANELS.waaree625, cfg.panel === 'custom' && cfg.custom ? cfg.custom : {});
+  const R = { cfg, panel: P, warns: [], checks: [] };
+  const chk = (lvl, t, d) => R.checks.push({ lvl, t, d: d || '' });
+  R.survey = surveyStatus(cfg);
+
+  // plan geometry in metres
+  const addP = [], cutP = [];
+  for (const r of cfg.roof) { const q = { x0: r.x * u, y0: r.y * u, x1: (r.x + r.w) * u, y1: (r.y + r.h) * u }; (r.mode === 'cut' ? cutP : addP).push(q); }
+  const obsP = cfg.obstacles.map(o => ({ name: o.name || 'Obstacle', x0: o.x * u, y0: o.y * u, x1: (o.x + o.w) * u, y1: (o.y + o.h) * u, h0: +o.h0 || 0, h1: +o.h1 || 0, solid: o.solid !== false, tree: !!o.tree || /\btree\b/i.test(o.name || ''), measured: !!o.measured }));
+  R.addP = addP; R.cutP = cutP; R.obsP = obsP;
+  if (!addP.length) { R.empty = true; return R; }
+
+  // module geometry
+  const landscape = cfg.orient !== 'portrait';
+  const a = landscape ? P.L : P.W, slope = landscape ? P.W : P.L, tilt = cfg.tilt * D2R;
+  const d = slope * Math.cos(tilt), rise = slope * Math.sin(tilt);
+  R.mod = { a, slope, d, rise };
+
+  // sun / pitch
+  const facingBearing = ((face === 'down' ? 180 : face === 'up' ? 0 : face === 'right' ? 90 : 270) - cfg.northAngle + 360) % 360;
+  R.facingBearing = facingBearing;
+  const dev = ((facingBearing - 180 + 540) % 360) - 180; R.dev = dev;
+  const dec = -23.44; let sy = 0;
+  const times = [{ k: '09:00', H: -45 }, { k: '12:00', H: 0 }, { k: '15:00', H: 45 }];
+  const sunAt = {};
+  for (const t of times) {
+    const s = sunPos(cfg.lat, dec, t.H); sunAt[t.k] = s;
+    const shBear = (s.bearing + 180) % 360, De = (shBear - facingBearing) * D2R;
+    t.sy = -Math.cos(De) / Math.tan(s.alt * D2R); // shadow length toward array back, per metre of height
+    t.sx = -Math.sin(De) / Math.tan(s.alt * D2R);
+    t.pv = [Math.sin((shBear + cfg.northAngle) * D2R), Math.cos((shBear + cfg.northAngle) * D2R)].map(v => v / Math.tan(s.alt * D2R)); // plan vector per metre
+    sy = Math.max(sy, t.sy);
+  }
+  for (let H = -45; H <= 45; H += 5) { const s = sunPos(cfg.lat, dec, H), De = ((s.bearing + 180) % 360 - facingBearing) * D2R; sy = Math.max(sy, -Math.cos(De) / Math.tan(s.alt * D2R)); }
+  const pitch = d + rise * Math.max(0, sy);
+  R.pitch = pitch; R.sun = sunAt; R.times = times;
+
+  // frame geometry
+  const fAdd = addP.map(r => rectF(face, r)), fCut = cutP.map(r => rectF(face, r));
+  const fSolid = obsP.filter(o => o.solid).map(o => rectF(face, o));
+  let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+  for (const r of fAdd) { bx0 = Math.min(bx0, r.x0); by0 = Math.min(by0, r.y0); bx1 = Math.max(bx1, r.x1); by1 = Math.max(by1, r.y1); }
+  const c = 0.05, nx = Math.ceil((bx1 - bx0) / c), ny = Math.ceil((by1 - by0) / c);
+  const M = new Uint8Array(nx * ny);
+  const fill = (r, v) => {
+    const i0 = Math.max(0, Math.ceil((r.x0 - bx0) / c - 0.5)), i1 = Math.min(nx - 1, Math.floor((r.x1 - bx0) / c - 0.5));
+    const j0 = Math.max(0, Math.ceil((r.y0 - by0) / c - 0.5)), j1 = Math.min(ny - 1, Math.floor((r.y1 - by0) / c - 0.5));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) M[j * nx + i] = v;
+  };
+  fAdd.forEach(r => fill(r, 1)); fCut.forEach(r => fill(r, 0)); fSolid.forEach(r => fill(r, 0));
+  const mkSat = (MM) => { const T = new Int32Array((nx + 1) * (ny + 1)); for (let j = 0; j < ny; j++) { let row = 0; for (let i = 0; i < nx; i++) { row += MM[j * nx + i]; T[(j + 1) * (nx + 1) + i + 1] = T[j * (nx + 1) + i + 1] + row; } } return T; };
+  const mkInside = (T) => (x0, y0, x1, y1) => {
+    const i0 = Math.floor((x0 - bx0) / c + 1e-6), i1 = Math.ceil((x1 - bx0) / c - 1e-6), j0 = Math.floor((y0 - by0) / c + 1e-6), j1 = Math.ceil((y1 - by0) / c - 1e-6);
+    if (i0 < 0 || j0 < 0 || i1 > nx || j1 > ny) return false;
+    const s = T[j1 * (nx + 1) + i1] - T[j0 * (nx + 1) + i1] - T[j1 * (nx + 1) + i0] + T[j0 * (nx + 1) + i0];
+    return s === (i1 - i0) * (j1 - j0);
+  };
+  const inside = mkInside(mkSat(M));
+  const M2 = new Uint8Array(nx * ny); { const sv = M.slice(); M.set(M2); fAdd.forEach(r => fill(r, 1)); fCut.forEach(r => fill(r, 0)); M2.set(M); M.set(sv); }
+  const inside2 = mkInside(mkSat(M2));
+  R.mask = { M, nx, ny, c, bx0, by0 };
+  let area = 0; for (let k = 0; k < M.length; k++) area += M[k]; R.usableArea = area * c * c;
+  R.roofArea = (() => { let t = 0; const mm = new Uint8Array(nx * ny); const f2 = (r, v) => { const i0 = Math.max(0, Math.ceil((r.x0 - bx0) / c - 0.5)), i1 = Math.min(nx - 1, Math.floor((r.x1 - bx0) / c - 0.5)), j0 = Math.max(0, Math.ceil((r.y0 - by0) / c - 0.5)), j1 = Math.min(ny - 1, Math.floor((r.y1 - by0) / c - 0.5)); for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) mm[j * nx + i] = v; }; fAdd.forEach(r => f2(r, 1)); fCut.forEach(r => f2(r, 0)); for (const v of mm) t += v; return t * c * c; })();
+
+  // candidate row positions
+  const cf = cfg.cFront, cs = cfg.cSide, gap = cfg.gap;
+  const edges = new Set();
+  for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+    if (M[j * nx + i] === 1 && (j === 0 || M[(j - 1) * nx + i] === 0)) edges.add(Math.round((by0 + j * c) * 100) / 100);
+  }
+  const cand = [];
+  for (const e of edges) for (let k = 0; k < 40; k++) { const y = e + cf + k * pitch; if (y > by1) break; cand.push(y); }
+  cand.sort((p, q) => p - q);
+  const cands = []; for (const y of cand) if (!cands.length || y - cands[cands.length - 1] > 0.03) cands.push(y);
+
+  const slots = [];
+  const valid = (x, y) => inside(x - cs, y - cf, x + a + cs, y + d + cs);
+  const conflict = (x, y) => { for (const s of slots) { if (x < s.x + a + gap - 1e-9 && x + a + gap > s.x + 1e-9 && Math.abs(y - s.y) < pitch - 1e-6) return true; } return false; };
+  for (const y of cands) {
+    let x = bx0;
+    while (x + a <= bx1 + 1e-9) {
+      if (valid(x, y) && !conflict(x, y)) { slots.push({ x, y }); x += a + gap; } else x += c;
+    }
+  }
+  R.capacity = slots.length; R.slots = slots;
+
+  // shading of each slot (21 Dec), sample based
+  const hulls = {};
+  for (const t of times) {
+    hulls[t.k] = obsP.filter(o => o.h1 > 0).map(o => {
+      const rc = [[o.x0, o.y0], [o.x1, o.y0], [o.x1, o.y1], [o.x0, o.y1]];
+      const pts = []; for (const h of [o.h0, o.h1]) for (const q of rc) pts.push([q[0] + t.pv[0] * h, q[1] + t.pv[1] * h]);
+      return { name: o.name, poly: hull(pts) };
+    });
+  }
+  R.hulls = hulls;
+  for (const s of slots) {
+    const fr = { x0: s.x, y0: s.y, x1: s.x + a, y1: s.y + d };
+    s.fr = fr; s.pr = rectP(face, fr);
+    let worst = 0; s.shade = {};
+    for (const t of times) {
+      let hit = 0, tot = 0;
+      for (let i = 0; i < 12; i++) for (let j = 0; j < 6; j++) {
+        const px = s.pr.x0 + (i + 0.5) / 12 * (s.pr.x1 - s.pr.x0), py = s.pr.y0 + (j + 0.5) / 6 * (s.pr.y1 - s.pr.y0);
+        tot++; if (hulls[t.k].some(h => inConvex(h.poly, px, py))) hit++;
+      }
+      s.shade[t.k] = hit / tot; worst = Math.max(worst, hit / tot);
+    }
+    s.worst = worst; s.mean = (s.shade['09:00'] + 2 * s.shade['12:00'] + s.shade['15:00']) / 4;
+  }
+
+  // zones of all candidate slots, entry point, then choose modules nearest the entry first
+  const clusterSlots = (arr) => {
+    const par = arr.map((_, i) => i); const fd = x => par[x] === x ? x : (par[x] = fd(par[x]));
+    for (let i = 0; i < arr.length; i++) for (let j = i + 1; j < arr.length; j++) {
+      const p = arr[i].fr, q = arr[j].fr, dy = Math.abs(p.y0 - q.y0);
+      const xov = Math.min(p.x1, q.x1) - Math.max(p.x0, q.x0), xg = Math.max(p.x0, q.x0) - Math.min(p.x1, q.x1);
+      if ((dy < 0.1 && xg <= 0.4) || (dy < pitch + 0.3 && xov > 0.3 * a)) par[fd(i)] = fd(j);
+    }
+    const gr = {}; arr.forEach((s, i) => { (gr[fd(i)] = gr[fd(i)] || []).push(s); }); return Object.values(gr);
+  };
+  if (!slots.length) { chk('fail', 'No panel fits', 'Clearances leave no room on this roof.'); return R; }
+  const cen0 = [slots.reduce((p, s) => p + (s.pr.x0 + s.pr.x1) / 2, 0) / slots.length, slots.reduce((p, s) => p + (s.pr.y0 + s.pr.y1) / 2, 0) / slots.length];
+  let entry = cfg.entry ? [cfg.entry.x * u, cfg.entry.y * u] : null;
+  if (!entry) {
+    let best = null, bd = 1e9; const cands2 = obsP.filter(o => o.solid).concat([{ x0: Math.min(...addP.map(r => r.x0)), y0: Math.min(...addP.map(r => r.y0)), x1: Math.max(...addP.map(r => r.x1)), y1: Math.max(...addP.map(r => r.y1)) }]);
+    for (const o of cands2) { const q = [Math.min(Math.max(cen0[0], o.x0), o.x1), Math.min(Math.max(cen0[1], o.y0), o.y1)]; const dd = dist(q, cen0); if (dd < bd) { bd = dd; best = q; } }
+    entry = best || cen0; R.entryAuto = true;
+  }
+  R.entry = entry;
+  const zr = clusterSlots(slots).map(zz => ({ zz, d: Math.min(...zz.map(s => dist([(s.pr.x0 + s.pr.x1) / 2, (s.pr.y0 + s.pr.y1) / 2], entry))) })).sort((p, q) => p.d - q.d);
+  zr.forEach((z, k) => z.zz.forEach(s => s.zrank = k));
+
+  // choose modules
+  const target = Math.max(1, Math.round(cfg.kWp * 1000 / P.Wp));
+  R.target = target;
+  const pool = slots.filter(s => cfg.allowShaded || s.worst <= cfg.shadeThr);
+  pool.sort((p, q) => ((p.worst > cfg.shadeThr) - (q.worst > cfg.shadeThr)) || (p.worst > cfg.shadeThr ? (p.mean - q.mean) || (p.worst - q.worst) : 0) || (p.zrank - q.zrank) || (p.y - q.y) || (p.x - q.x));
+  const chosen = pool.slice(0, target);
+  R.N = chosen.length; R.kWp = R.N * P.Wp / 1000;
+  if (R.N < target) chk('fail', 'Roof is too small for ' + cfg.kWp + ' kWp', 'Only ' + R.N + ' of ' + target + ' panels fit with these clearances (' + R.kWp.toFixed(2) + ' kWp). Reduce the target, use smaller clearances, or tilt flatter.');
+  else chk('ok', R.N + ' panels fit = ' + R.kWp.toFixed(2) + ' kWp', 'Roof can hold up to ' + R.capacity + ' panels (' + (R.capacity * P.Wp / 1000).toFixed(2) + ' kWp).');
+  if (!R.N) return R;
+  chosen.forEach((s, i) => { s.id = i; s.c = [(s.pr.x0 + s.pr.x1) / 2, (s.pr.y0 + s.pr.y1) / 2]; });
+  R.mods = chosen;
+  const nShaded = chosen.filter(s => s.worst > cfg.shadeThr).length; R.nShaded = nShaded;
+
+
+  // zones (clusters)
+  const par = chosen.map((_, i) => i); const fd = x => par[x] === x ? x : (par[x] = fd(par[x]));
+  for (let i = 0; i < R.N; i++) for (let j = i + 1; j < R.N; j++) {
+    const p = chosen[i].fr, q = chosen[j].fr, dy = Math.abs(p.y0 - q.y0);
+    const xov = Math.min(p.x1, q.x1) - Math.max(p.x0, q.x0), xg = Math.max(p.x0, q.x0) - Math.min(p.x1, q.x1);
+    if ((dy < 0.1 && xg <= 0.4) || (dy < pitch + 0.3 && xov > 0.3 * a)) par[fd(i)] = fd(j);
+  }
+  const groups = {}; chosen.forEach((s, i) => { (groups[fd(i)] = groups[fd(i)] || []).push(s); });
+  const serp = (arr) => {
+    const rows = {}; arr.forEach(s => { const k = Math.round(s.y * 10); (rows[k] = rows[k] || []).push(s); });
+    const keys = Object.keys(rows).map(Number).sort((p, q) => p - q);
+    let best = null, bl = 1e9;
+    for (const rev of [false, true]) for (const l2r of [true, false]) {
+      const ks = rev ? keys.slice().reverse() : keys; const seq = []; let dir = l2r;
+      for (const k of ks) { const r = rows[k].slice().sort((p, q) => dir ? p.fr.x0 - q.fr.x0 : q.fr.x0 - p.fr.x0); seq.push(...r); dir = !dir; }
+      let l = dist(seq[0].c, entry) + dist(seq[seq.length - 1].c, entry); for (let i = 1; i < seq.length; i++) l += dist(seq[i - 1].c, seq[i].c);
+      if (l < bl) { bl = l; best = seq; }
+    }
+    return best;
+  };
+  let zones = Object.values(groups).map(g => ({ mods: serp(g) }));
+  zones.sort((p, q) => dist(p.mods[0].c, entry) - dist(q.mods[0].c, entry));
+  R.zones = zones.length;
+  const unshaded = [], shaded = [];
+  zones.forEach(z => { const us = z.mods.filter(s => s.worst <= cfg.shadeThr), sh = z.mods.filter(s => s.worst > cfg.shadeThr); unshaded.push(...us); shaded.push(...sh); });
+  const order = unshaded.concat(shaded); order.forEach((s, i) => s.seq = i);
+
+  // inverter + strings
+  const vocC = P.Voc * (1 + P.bVoc * (5 - 25)), vmpH = P.Vmp * (1 + P.bP * 50), vmpC = P.Vmp * (1 + P.bVoc * (-20));
+  R.vocC = vocC; R.vmpH = vmpH;
+  const candInv = (cfg.inverter === 'auto' ? INVERTERS.filter(v => (cfg.supply === '3' ? (v.ph === 3 || v.ac <= 5) : v.ph === 1)) : INVERTERS.filter(v => v.id === cfg.inverter));
+  const planStr = (iv) => {
+    const nmax = Math.min(Math.floor(iv.vmax * 0.98 / vocC), Math.floor(iv.mmax / vmpC)), nmin = Math.ceil(iv.mmin / vmpH);
+    const p = Math.max(0, Math.min(2, Math.floor(iv.isc / P.Isc)));
+    if (p < 1 || P.Imp > iv.imp * 1.0 + 1e-9) return { ok: false, why: 'MPPT current ' + iv.imp + ' A (Isc ' + iv.isc + ' A) is too low for this panel (Imp ' + P.Imp + ' A, Isc ' + P.Isc + ' A)', nmin, nmax, p };
+    const N = R.N, cap = iv.mppt * p; let best = null;
+    const tryS = (S) => {
+      const base = Math.floor(N / S), ex = N % S; if (base < 1) return null;
+      const lens = []; for (let i = 0; i < S; i++) lens.push(base + (i < ex ? 1 : 0));
+      if (lens.some(l => l < nmin || l > nmax)) return null;
+      const grp = {}; lens.forEach(l => grp[l] = (grp[l] || 0) + 1);
+      let need = 0; for (const l in grp) need += Math.ceil(grp[l] / p);
+      if (need > iv.mppt) return null;
+      return { S, lens, equal: ex === 0 };
+    };
+    const order2 = []; for (let S = Math.min(iv.mppt, cap); S <= cap; S++) order2.push(S); for (let S = Math.min(iv.mppt, cap) - 1; S >= 1; S--) order2.push(S);
+    for (const S of order2) { const r = tryS(S); if (r && r.equal) { best = r; break; } }
+    if (!best) for (const S of order2) { const r = tryS(S); if (r) { best = r; break; } }
+    return best ? Object.assign({ ok: true, nmin, nmax, p }, best) : { ok: false, why: 'No valid string arrangement for ' + N + ' panels (series count must be ' + nmin + '-' + nmax + ' per string)', nmin, nmax, p };
+  };
+  let chosenInv = null, strPlan = null, tried = [];
+  const sorted = candInv.slice().sort((p, q) => p.ac - q.ac);
+  for (const lim of (cfg.inverter === 'auto' ? [1.15, 1.25] : [99])) {
+    for (const iv of sorted) {
+      const ratio = R.kWp / iv.ac; if (ratio > lim) continue;
+      const sp = planStr(iv); tried.push({ iv, sp });
+      if (sp.ok) { chosenInv = iv; strPlan = sp; break; }
+    }
+    if (chosenInv) break;
+  }
+  if (!chosenInv && cfg.inverter === 'auto') { // none fits ratio; take the largest allowed and report
+    const iv = sorted[sorted.length - 1]; if (iv) { const sp = planStr(iv); tried.push({ iv, sp }); if (sp.ok) { chosenInv = iv; strPlan = sp; } }
+  }
+  if (!chosenInv) {
+    const last = tried[tried.length - 1];
+    chk('fail', 'No inverter can string ' + R.N + ' panels', last ? last.sp.why : 'No inverter available for this supply');
+    R.feasible = feasibleScan(R, cfg, planStr, candInv); return R;
+  }
+  R.inv = chosenInv; R.strPlan = strPlan;
+  const ratio = R.kWp / chosenInv.ac; R.dcac = ratio;
+  chk(ratio <= 1.25 && ratio >= 0.9 ? 'ok' : 'warn', 'Inverter ' + chosenInv.ac + ' kW (' + chosenInv.ph + '-phase), DC/AC ' + ratio.toFixed(2), ratio > 1.25 ? 'Array is large for this inverter; clipping losses.' : 'Typical range is 1.0 to 1.2.');
+  if (cfg.supply === '1' && R.kWp > 6) chk('warn', 'Large array on a single-phase supply', 'Above about 6 kW, most electricity companies expect a three-phase connection. Check your sanctioned supply.');
+  if (cfg.supply === '3' && chosenInv.ph === 1) chk('ok', 'Single-phase inverter chosen', 'Fine for small systems. Three-phase inverters balance the load better.');
+  R.feasible = feasibleScan(R, cfg, planStr, candInv);
+
+  // strings -> modules, paths
+  R.strings = [];
+  const lens = strPlan.lens.slice().sort((p, q) => q - p);
+  // try to keep every string inside one zone (bin packing by backtracking)
+  const zs = zones.map(z => z.mods.length), asg = new Array(lens.length).fill(-1);
+  const bt = (i) => { if (i === lens.length) return zs.every(v => v === 0); const tried2 = new Set(); for (let z = 0; z < zs.length; z++) { if (zs[z] >= lens[i] && !tried2.has(zs[z])) { tried2.add(zs[z]); zs[z] -= lens[i]; asg[i] = z; if (bt(i + 1)) return true; zs[z] += lens[i]; } } return false; };
+  const aligned = bt(0); R.aligned = aligned;
+  if (aligned) {
+    const taken = zones.map(() => 0);
+    lens.forEach((l, k) => { const z = asg[k]; const ms = zones[z].mods.slice(taken[z], taken[z] + l); taken[z] += l; R.strings.push({ n: 0, mods: ms, len: l }); });
+    R.strings.sort((p, q) => dist(p.mods[0].c, entry) - dist(q.mods[0].c, entry));
+  } else {
+    let idx = 0; lens.forEach((l) => { R.strings.push({ n: 0, mods: order.slice(idx, idx + l), len: l }); idx += l; });
+  }
+  R.strings.forEach((s, k) => s.n = k + 1);
+  // MPPT assignment
+  const grp = {}; R.strings.forEach(s => { (grp[s.len] = grp[s.len] || []).push(s); });
+  let mp = 0; for (const l in grp) { const arr = grp[l]; for (let i = 0; i < arr.length; i += strPlan.p) { mp++; arr.slice(i, i + strPlan.p).forEach(s => s.mppt = mp); } }
+  R.mpptUsed = mp;
+  const allSolids = obsP.filter(o => o.solid);
+  const elbow = (p, e) => {
+    const A = [[p, [e[0], p[1]], e], [p, [p[0], e[1]], e]];
+    const cnt = A.map(path => allSolids.reduce((t, o) => t + (segHitsRect(path[0], path[1], o) ? 1 : 0) + (segHitsRect(path[1], path[2], o) ? 1 : 0), 0));
+    return cnt[0] <= cnt[1] ? { pts: A[0], hit: cnt[0] } : { pts: A[1], hit: cnt[1] };
+  };
+  const rho = 0.0225;
+  for (const s of R.strings) {
+    const cs2 = s.mods.map(m => m.c);
+    let ser = 0; const line = [cs2[0]];
+    for (let i = 1; i < cs2.length; i++) {
+      const p = cs2[i - 1], q = cs2[i];
+      if (dist(p, q) > a + pitch + 0.8) { const e = elbow(p, q); line.push(e.pts[1], q); ser += Math.abs(p[0] - q[0]) + Math.abs(p[1] - q[1]); s.farLink = true; }
+      else { line.push(q); ser += dist(p, q); }
+    }
+    s.line = line;
+    // orient: start = negative end, end = positive end: choose end nearer entry as negative to shorten? keep sequence order
+    const h1 = elbow(cs2[0], entry), h2 = elbow(cs2[cs2.length - 1], entry);
+    const hl1 = Math.abs(cs2[0][0] - entry[0]) + Math.abs(cs2[0][1] - entry[1]), hl2 = Math.abs(cs2[cs2.length - 1][0] - entry[0]) + Math.abs(cs2[cs2.length - 1][1] - entry[1]);
+    s.ser = ser; s.h1 = h1; s.h2 = h2; s.hl1 = hl1; s.hl2 = hl2;
+    s.loop = (ser + hl1 + hl2 + 2 * cfg.inside) * 1.10;
+    s.voc = s.len * vocC; s.vmp = s.len * P.Vmp; s.vmpH = s.len * vmpH;
+    s.area = 4; s.dv = 0;
+    for (const A of [4, 6, 10]) { s.area = A; s.dv = s.loop * P.Imp * rho / A; if (s.dv / s.vmp <= 0.01) break; }
+    s.dvPct = s.dv / s.vmp * 100;
+    s.crossObs = h1.hit + h2.hit;
+    s.shaded = s.mods.filter(m => m.worst > cfg.shadeThr).length;
+  }
+  R.dcCableM = R.strings.reduce((t, s) => t + s.loop, 0);
+  const maxDv = Math.max(...R.strings.map(s => s.dvPct));
+  chk(maxDv <= 1.5 ? 'ok' : 'warn', 'DC voltage drop up to ' + maxDv.toFixed(2) + ' %', 'Cable sized by string (4, 6 or 10 mm2 Cu). Target 1 % or less.');
+  const worstCold = Math.max(...R.strings.map(s => s.voc));
+  chk('ok', 'String voltage windows are inside the inverter range', 'Voc at 5 C up to ' + worstCold.toFixed(0) + ' V (limit ' + chosenInv.vmax + ' V); Vmp at 75 C down to ' + Math.min(...R.strings.map(s => s.vmpH)).toFixed(0) + ' V (MPPT starts ' + chosenInv.mmin + ' V).');
+  if (R.strings.some(s => s.farLink)) chk('warn', 'A string joins panels in different roof areas', 'The link between them is routed in a straight L (shown on the wiring view). Walk the route on site and run it in conduit around obstacles.');
+  if (R.strings.some(s => s.crossObs)) chk('warn', 'A cable route may cross an obstacle', 'The straight home-run crosses a solid obstacle on the plan. Route it around on site.');
+
+  // AC design
+  const Pac = chosenInv.ac * 1000, Iac = chosenInv.ph === 3 ? Pac / (SQ3 * 415) : Pac / 230;
+  R.Iac = Iac;
+  const acCable = (L) => { let A = 4; for (const k of Object.keys(AC_AMP).map(Number)) { A = k; const dv = (chosenInv.ph === 3 ? SQ3 : 2) * Iac * rho * L / k; if (AC_AMP[k] >= 1.25 * Iac && dv / (chosenInv.ph === 3 ? 415 : 230) <= 0.01) break; } return { A, dvPct: (chosenInv.ph === 3 ? SQ3 : 2) * Iac * rho * L / A / (chosenInv.ph === 3 ? 415 : 230) * 100 }; };
+  R.ac = acCable(cfg.acRun); R.ac2 = acCable(cfg.dbRun);
+  R.mcb = STD_MCB.find(v => v >= 1.25 * Iac) || 125;
+  R.acCores = chosenInv.ph === 3 ? '4C' : '2C';
+  chk(R.ac.dvPct <= 1 ? 'ok' : 'warn', 'AC cable ' + R.acCores + ' x ' + R.ac.A + ' mm2 Cu armoured, drop ' + R.ac.dvPct.toFixed(2) + ' %', 'Inverter output ' + Iac.toFixed(1) + ' A; breaker ' + R.mcb + ' A.');
+  R.isoV = Math.max(...R.strings.map(s => s.voc)) * 1.15 > 1000 ? 1500 : 1000;
+
+  // yield
+  const orLoss = (1 - Math.cos(R.dev * D2R)) * Math.sin(tilt) * 0.5;
+  let shLoss = R.N ? 0.25 * chosen.reduce((t, s) => t + s.worst, 0) / R.N : 0;
+  if (R.N) { try { // year-round shade: 12 days, every 30 min, weighted by sun height; x1.3 for string mismatch
+    let a = 0, w = 0; for (const d of [20, 50, 80, 110, 140, 172, 200, 230, 260, 290, 320, 355]) for (let hh = 6.5; hh <= 17.5; hh += 0.5) { const L = liveShade(R, d, hh); if (!L.up) continue; const k = Math.sin(L.alt * D2R); a += k * L.avg; w += k; }
+    if (w > 0) { R.yearShade = a / w; shLoss = Math.min(0.9, 1.3 * R.yearShade); } } catch (x) { } }
+  R.orLoss = orLoss; R.shLoss = shLoss;
+  R.gen = R.kWp * cfg.yieldKwp * (1 - orLoss) * (1 - shLoss);
+  chk(Math.abs(R.dev) <= 30 ? 'ok' : 'warn', 'Panels face ' + facingBearing.toFixed(0) + ' deg (south = 180)', 'Orientation loss about ' + (orLoss * 100).toFixed(1) + ' % at ' + cfg.tilt + ' deg tilt.');
+  chk(nShaded === 0 ? 'ok' : 'warn', nShaded === 0 ? 'No obstacle shade on 21 Dec, 09:00-15:00 solar time' : nShaded + ' panel(s) shaded on 21 Dec', nShaded === 0 ? 'Rows are spaced so they do not shade each other (pitch ' + pitch.toFixed(2) + ' m).' : 'They are kept on their own string so the others are not dragged down.' + (R.yearShade != null ? ' Over a whole year about ' + Math.round(R.yearShade * 100) + ' % of the panel area is in shade, costing about ' + Math.round(shLoss * 100) + ' % of output (already taken off the generation figure).' : ''));
+  // parapet shade
+  const frontSide = { down: 'bottom', up: 'top', left: 'left', right: 'right' }[face], frontH = edgeOf(cfg, frontSide).h;
+  const reach = frontH * Math.max(0, ...times.map(t => t.sy));
+  chk(reach <= cf ? 'ok' : 'warn', 'Front parapet shade reach ' + reach.toFixed(2) + ' m (clearance ' + cf.toFixed(2) + ' m)', reach <= cf ? 'The parapet in front does not shade the first row in December mornings and evenings.' : 'On 21 Dec at 09:00 or 15:00 the parapet may shade the lowest ' + (reach - cf).toFixed(2) + ' m of the first row. Increase the front clearance or accept a small loss.');
+
+  // wind and ballast
+  const k2 = k2for(cfg.bldgH), Vz = cfg.Vb * k2, pz = 0.6 * Vz * Vz / 1000; // kN/m2
+  R.wind = { k2, Vz, pz };
+  const Ap = P.L * P.W, dead = P.kg + cfg.structKg;
+  let nEdge = 0, tot = 0;
+  const fSide = (dx, dy) => { const p0 = fromFrame(face, 0, 0), p1 = fromFrame(face, dx, dy), vx = p1[0] - p0[0], vy = p1[1] - p0[1]; return Math.abs(vx) > Math.abs(vy) ? (vx > 0 ? 'right' : 'left') : (vy > 0 ? 'top' : 'bottom'); };
+  for (const m of chosen) {
+    const ez = cfg.edgeZone, nearSides = [];
+    if (!inside2(m.fr.x0 - ez, m.fr.y0, m.fr.x1, m.fr.y1)) nearSides.push(fSide(-1, 0));
+    if (!inside2(m.fr.x0, m.fr.y0, m.fr.x1 + ez, m.fr.y1)) nearSides.push(fSide(1, 0));
+    if (!inside2(m.fr.x0, m.fr.y0 - ez, m.fr.x1, m.fr.y1)) nearSides.push(fSide(0, -1));
+    if (!inside2(m.fr.x0, m.fr.y0, m.fr.x1, m.fr.y1 + ez)) nearSides.push(fSide(0, 1));
+    m.edge = nearSides.length > 0 || !inside2(m.fr.x0 - ez, m.fr.y0 - ez, m.fr.x1 + ez, m.fr.y1 + ez);
+    m.edgeSides = nearSides;
+    const cp = m.edge ? (nearSides.length ? Math.max(...nearSides.map(sd => cpSide(cfg, sd))) : cfg.cpEdge) : cfg.cpInt, up = pz * 1000 / 9.81 * cp * Ap;
+    m.uplift = up; m.blocks = Math.max(cfg.minBlocks, Math.ceil((cfg.fos * up - dead) / cfg.blockKg));
+    m.fosAch = (dead + m.blocks * cfg.blockKg) / up; if (m.edge) nEdge++; tot += m.blocks;
+  }
+  R.nEdge = nEdge; R.blocks = tot; R.ballastKg = tot * cfg.blockKg;
+  R.footprint = R.N * a * pitch; R.massKg = R.N * dead + R.ballastKg; R.load = R.massKg / R.footprint;
+  chk(R.load <= 60 ? 'ok' : R.load <= 100 ? 'warn' : 'fail', 'Added roof load about ' + R.load.toFixed(0) + ' kg/m2 (' + (R.massKg / 1000).toFixed(2) + ' t over ' + R.footprint.toFixed(0) + ' m2)', 'A structural engineer must certify the slab. Planning comfort level here: 60 kg/m2 or less; above 100 needs a closer look.');
+  chk('warn', 'Wind coefficients are assumptions (interior ' + cfg.cpInt + ', open edge ' + cfg.cpEdge + (cfg.edges ? ', lower behind solid walls' : '') + ')', 'The structure supplier must give a signed IS 875-3 calculation. A higher edge coefficient means more blocks. Sensitivity: at edge 0.8, edge panels need ' + Math.max(cfg.minBlocks, Math.ceil((cfg.fos * pz * 1000 / 9.81 * 0.8 * Ap - dead) / cfg.blockKg)) + ' blocks each.');
+
+  // BOM
+  const strCount = R.strings.length, mpp = R.N;
+  const pad = (lo, hi) => ({ lo, hi });
+  const invPrice = { s3: [28, 36], s4: [34, 44], s5: [42, 55], s6: [50, 65], t5: [52, 68], t6: [58, 75], t8: [68, 85], t10: [70, 90], t12: [90, 115], t15: [110, 140] }[chosenInv.id] || [50, 80];
+  const dcMax = R.dcCableM * 1.1, acM = cfg.acRun * 1.1 + cfg.dbRun * 1.1;
+  R.bom = [
+    { i: 'PV modules ' + P.Wp + ' Wp (' + P.name.split(' (')[0] + ')', q: R.N + ' nos', lo: R.N * P.Wp * 26, hi: R.N * P.Wp * 30 },
+    { i: 'Inverter ' + chosenInv.ac + ' kW ' + chosenInv.ph + '-phase', q: '1 no', lo: invPrice[0] * 1000, hi: invPrice[1] * 1000 },
+    { i: 'Ballast structure sets (rails, posts, clamps, deflector, SS304 hardware)', q: R.N + ' sets', lo: R.N * 3750, hi: R.N * 5600 },
+    { i: 'Concrete ballast blocks ' + cfg.blockKg + ' kg (M25)', q: R.blocks + ' nos', lo: R.blocks * 100, hi: R.blocks * 150 },
+    { i: 'EPDM pads 8 mm (rails and blocks)', q: R.N + ' sets', lo: R.N * 190, hi: R.N * 310 },
+    { i: 'DC solar cable 4-10 mm2 Cu and MC4 connectors', q: dcMax.toFixed(0) + ' m conductor + ' + (strCount + 4) + ' pairs', lo: dcMax * 45 + (strCount + 4) * 140, hi: dcMax * 65 + (strCount + 4) * 200 },
+    { i: 'DCDB IP65 with isolators (' + strCount + ' string) and Type 2 DC SPD', q: '1 no', lo: 12000 + 2000 * Math.max(0, strCount - 2), hi: 18000 + 3000 * Math.max(0, strCount - 2) },
+    { i: 'AC cable ' + R.acCores + ' x ' + R.ac.A + ' mm2 Cu XLPE armoured + earth', q: acM.toFixed(0) + ' m', lo: acM * R.ac.A * 45, hi: acM * R.ac.A * 65 },
+    { i: 'ACDB IP65: ' + R.mcb + ' A MCB, RCCB, Type 2 AC SPD, isolator', q: '1 no', lo: 10000, hi: 15000 },
+    { i: 'Earthing: 3 pits (Cu-bonded rod, chamber, strips, bonding kit)', q: '3 pits', lo: 20000, hi: 30000 },
+    { i: cfg.la ? 'Lightning mast, down-conductor and pit' : 'Lightning protection (not included)', q: cfg.la ? '1 set' : '-', lo: cfg.la ? 12000 : 0, hi: cfg.la ? 25000 : 0 },
+    { i: 'Conduit, cable tray, ramps, wall sleeves, sealant, labels', q: 'lot', lo: 4000 + R.N * 400, hi: 6000 + R.N * 600 },
+    { i: 'Monitoring (Wi-Fi/SIM), CO2 extinguisher, signage', q: 'lot', lo: 5000, hi: 8000 },
+    { i: 'Design, structural certificate, net-metering liaison, installation, testing', q: R.kWp.toFixed(1) + ' kWp', lo: R.kWp * 6000, hi: R.kWp * 9000 },
+    { i: 'Net meter (AMI) and fees', q: '-', lo: 0, hi: 0, note: 'as billed by your electricity company' }
+  ];
+  R.costLo = R.bom.reduce((t, b) => t + b.lo, 0); R.costHi = R.bom.reduce((t, b) => t + b.hi, 0);
+  R.subsidy = subsidyFor(cfg, R.kWp);
+  R.survey = surveyStatus(cfg); R.genLo = R.gen * (1 - R.survey.band); R.genHi = R.gen * (1 + R.survey.band);
+  if (cfg.bldgType === 'flats') {
+    R.perFlat = R.gen / Math.max(1, cfg.flats || 1);
+    chk('warn', 'Society terrace: written resolution needed', 'The terrace is common property. Get a society resolution, keep fire-exit paths and tank access clear, and decide: common meter or units shared to flats (group or virtual net metering).');
+    if (cfg.bldgH > 30) chk('warn', 'Tall building: about ' + cfg.bldgH + ' m', 'Wind grows with height. Ballast may get too heavy: ask for an anchored or elevated frame design and a structural check.');
+  }
+  if (cfg.subsidy && R.subsidy) chk('ok', 'Subsidy about ' + Math.round(R.subsidy).toLocaleString('en-IN') + ' rupees (PM Surya Ghar)', cfg.bldgType === 'flats' ? 'Common facilities: 18,000 per kW, up to 3 kW per house and 500 kW in all.' : '30,000 per kW for the first 2 kW, 18,000 for the third; capped at 78,000. Needs made-in-India (DCR) panels on the approved list and a registered vendor.');
+
+  // savings
+  R.eco = null;
+  if (cfg.consumption > 0) {
+    const self = Math.min(R.gen, cfg.consumption), exp = Math.max(0, R.gen - cfg.consumption);
+    const save = self * cfg.saveRate + exp * cfg.exportRate;
+    R.eco = { self, exp, save, payLo: R.costLo / save, payHi: R.costHi / save, rightKwp: cfg.consumption / (cfg.yieldKwp * (1 - orLoss) * (1 - shLoss)) };
+  }
+  return R;
+}
+
+function feasibleScan(R, cfg, planStr, candInv) {
+  const P = R.panel, out = [];
+  for (let n = Math.max(1, R.target - 4); n <= Math.min(R.capacity, R.target + 6); n++) {
+    const saveN = R.N; R.N = n; const kWp = n * P.Wp / 1000;
+    let okInv = null;
+    for (const iv of candInv.slice().sort((p, q) => p.ac - q.ac)) { if (cfg.inverter === 'auto' && kWp / iv.ac > 1.15) continue; const sp = planStr(iv); if (sp.ok) { okInv = iv; break; } }
+    R.N = saveN; out.push({ n, kWp, ok: !!okInv, inv: okInv });
+  }
+  return out;
+}
+
+
+/* ---------- live shading for any date and solar time ---------- */
+function declin(doy) { return 23.45 * Math.sin(D2R * 360 / 365 * (284 + doy)); }
+function eotMin(doy) { const B = D2R * 360 / 365 * (doy - 81); return 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B); }
+function solarOffset(cfg, doy) { return ((cfg.lon == null ? 82.5 : cfg.lon) - 82.5) / 15 + eotMin(doy) / 60; } // solar hour = IST hour + this
+function liveShade(R, doy, hour) {
+  const cfg = R.cfg, out = { doy, hour, alt: 0, bearing: 0, up: false, hulls: [], rows: [], frac: [], shadedN: 0, avg: 0 };
+  if (!R.mods || !R.mods.length || !R.mod) return out;
+  const s = sunPos(cfg.lat, declin(doy), 15 * (hour - 12));
+  out.alt = s.alt; out.bearing = s.bearing; if (s.alt < 2) return out;
+  out.up = true;
+  const face = cfg.face, al = cfg.northAngle, ca = Math.cos(s.alt * D2R), sa = Math.sin(s.alt * D2R), ta = Math.tan(s.alt * D2R);
+  const hv = [Math.sin((s.bearing + al) * D2R), Math.cos((s.bearing + al) * D2R)];
+  const sun = [hv[0] * ca, hv[1] * ca, sa]; out.sun = sun; const sf = toFrame(face, sun[0], sun[1]), pv = [-hv[0] / ta, -hv[1] / ta];
+  const { rise, d } = R.mod, k = rise / d;
+  // drawn shadows on the roof
+  for (const o of R.obsP) if (o.h1 > 0) {
+    const rc = [[o.x0, o.y0], [o.x1, o.y0], [o.x1, o.y1], [o.x0, o.y1]], pts = [];
+    for (const hh of [o.h0, o.h1]) for (const q of rc) pts.push([q[0] + pv[0] * hh, q[1] + pv[1] * hh]);
+    out.hulls.push(hull(pts));
+  }
+  for (const m of R.mods) {
+    const f = m.fr, lo = [[f.x0, f.y0], [f.x1, f.y0]].map(q => fromFrame(face, q[0], q[1])), hi = [[f.x0, f.y1], [f.x1, f.y1]].map(q => fromFrame(face, q[0], q[1]));
+    out.rows.push(hull(lo.concat(hi, hi.map(q => [q[0] + pv[0] * rise, q[1] + pv[1] * rise]))));
+  }
+  // exact ray test per sample point
+  const inRoof = (x, y) => { for (const r of R.obsP) if (x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1) return true; let ina = false; for (const r of R.addP) if (x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1) ina = true; if (!ina) return false; return true; };
+  const hitBox = (P, o) => {
+    let t0 = 1e-4, t1 = 1e9; const lo = [o.x0, o.y0, o.h0], hi = [o.x1, o.y1, o.h1];
+    for (let a = 0; a < 3; a++) { if (Math.abs(sun[a]) < 1e-9) { if (P[a] < lo[a] || P[a] > hi[a]) return false; } else { let a0 = (lo[a] - P[a]) / sun[a], a1 = (hi[a] - P[a]) / sun[a]; if (a0 > a1) { const tmp = a0; a0 = a1; a1 = tmp; } t0 = Math.max(t0, a0); t1 = Math.min(t1, a1); if (t0 > t1) return false; } }
+    return true;
+  };
+  const hmax = Math.max(...SIDES.map(sd => edgeOf(cfg, sd).h));
+  const sideAt = (ax, ay, bx, by) => { for (const r of R.addP) if (ax >= r.x0 && ax <= r.x1 && ay >= r.y0 && ay <= r.y1) { if (bx < r.x0) return 'left'; if (bx > r.x1) return 'right'; if (by < r.y0) return 'bottom'; if (by > r.y1) return 'top'; } const vx = bx - ax, vy = by - ay; return Math.abs(vx) > Math.abs(vy) ? (vx > 0 ? 'right' : 'left') : (vy > 0 ? 'top' : 'bottom'); };
+  const NX = 8, NY = 4; let tot = 0, shaded = 0;
+  R.mods.forEach((m, mi) => {
+    let hit = 0;
+    for (let i = 0; i < NX; i++) for (let j = 0; j < NY; j++) {
+      const xf = m.fr.x0 + (i + 0.5) / NX * (m.fr.x1 - m.fr.x0), yf = m.fr.y0 + (j + 0.5) / NY * (m.fr.y1 - m.fr.y0), z = k * (yf - m.fr.y0);
+      const pp = fromFrame(face, xf, yf), P = [pp[0], pp[1], z]; let blocked = false;
+      for (const o of R.obsP) if (o.h1 > 0 && hitBox(P, o)) { blocked = true; break; }
+      if (!blocked) for (let q = 0; q < R.mods.length; q++) {
+        if (q === mi) continue; const A = R.mods[q].fr, den = sun[2] - k * sf[1]; if (Math.abs(den) < 1e-9) continue;
+        const t = (k * (yf - A.y0) - z) / den; if (t <= 1e-4) continue;
+        const qx = xf + t * sf[0], qy = yf + t * sf[1]; if (qx >= A.x0 && qx <= A.x1 && qy >= A.y0 && qy <= A.y1) { blocked = true; break; }
+      }
+      if (!blocked && hmax > z) { // parapet or kerb around the roof edge, per side
+        let ax = P[0], ay = P[1];
+        for (let st = 0.1; st <= 80 && !blocked; st += 0.1) { const tt = st / ca; const px = P[0] + sun[0] * tt, py = P[1] + sun[1] * tt, pz = z + sun[2] * tt; if (pz > hmax) break; if (!inRoof(px, py)) { if (pz < edgeOf(cfg, sideAt(ax, ay, px, py)).h) blocked = true; break; } ax = px; ay = py; }
+      }
+      if (blocked) hit++;
+    }
+    const fr = hit / (NX * NY); out.frac.push(fr); tot += 1; shaded += fr; if (fr > 0.05) out.shadedN++;
+  });
+  out.avg = tot ? shaded / tot : 0;
+  return out;
+}
+
+/* ====================== drawing ====================== */
+const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const COL = ['#1f5fbf', '#c4511a', '#1f8a5b', '#8a3fb5', '#b8860b', '#0e7490'];
+const COLF = ['#dbe7f7', '#fbe3d3', '#d6efe3', '#ead9f4', '#f4e7bf', '#d2edf3'];
+
+function planView(R, o) {
+  o = Object.assign({ shadows: true, strings: true, ballast: true, wires: false, W: 920, labels: true }, o || {});
+  const cfg = R.cfg;
+  if (R.empty) return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120"><text x="20" y="60" font-size="14" fill="#888">Add at least one roof rectangle.</text></svg>';
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  const ext = (r) => { x0 = Math.min(x0, r.x0); y0 = Math.min(y0, r.y0); x1 = Math.max(x1, r.x1); y1 = Math.max(y1, r.y1); };
+  R.addP.forEach(ext); R.obsP.forEach(ext);
+  const pad = 46, sc = (o.W - 2 * pad) / (x1 - x0), H = (y1 - y0) * sc + 2 * pad + 56;
+  R.pv = { x0, y0, sc, pad, H, W: o.W };
+  const X = x => pad + (x - x0) * sc, Y = y => H - pad - 56 - (y - y0) * sc;
+  const f = n => n.toFixed(1);
+  const g = [];
+  g.push('<rect width="' + o.W + '" height="' + f(H) + '" fill="#ffffff"/>');
+  g.push('<defs><pattern id="ht" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#9aa0a8" stroke-width="1"/></pattern></defs>');
+  // roof fill
+  R.addP.forEach(r => g.push('<rect x="' + f(X(r.x0)) + '" y="' + f(Y(r.y1)) + '" width="' + f((r.x1 - r.x0) * sc) + '" height="' + f((r.y1 - r.y0) * sc) + '" fill="#f3f0e8"/>'));
+  R.cutP.forEach(r => g.push('<rect x="' + f(X(r.x0)) + '" y="' + f(Y(r.y1)) + '" width="' + f((r.x1 - r.x0) * sc) + '" height="' + f((r.y1 - r.y0) * sc) + '" fill="#ffffff"/>'));
+  // obstacles
+  R.obsP.forEach(r => {
+    g.push('<rect x="' + f(X(r.x0)) + '" y="' + f(Y(r.y1)) + '" width="' + f((r.x1 - r.x0) * sc) + '" height="' + f((r.y1 - r.y0) * sc) + '" fill="' + (r.tree ? '#4f9a4a' : r.solid ? 'url(#ht)' : '#f9f9f9') + '"' + (r.tree ? ' fill-opacity="0.18"' : '') + ' stroke="' + (r.tree ? '#3d7a38' : '#555') + '" stroke-width="' + (r.solid ? 1.5 : 1) + '"' + (r.solid ? '' : ' stroke-dasharray="5 3"') + '/>');
+    if (o.labels) g.push('<text x="' + f(X((r.x0 + r.x1) / 2)) + '" y="' + f(Y((r.y0 + r.y1) / 2) + 4) + '" font-size="11" text-anchor="middle" fill="#333" font-family="Arial">' + esc(r.name) + ' (' + r.h1.toFixed(2) + ' m)</text>');
+  });
+  // outline from mask
+  const mk = R.mask; if (mk) {
+    const { M, nx, ny, c, bx0, by0 } = mk, face = cfg.face, segs = [];
+    const add = (ax, ay, bx, by) => { const p = fromFrame(face, ax, ay), q = fromFrame(face, bx, by); segs.push('M' + f(X(p[0])) + ' ' + f(Y(p[1])) + 'L' + f(X(q[0])) + ' ' + f(Y(q[1]))); };
+    for (let j = 0; j <= ny; j++) { let run = -1; for (let i = 0; i <= nx; i++) { const a1 = j > 0 && i < nx ? M[(j - 1) * nx + i] : 0, b1 = j < ny && i < nx ? M[j * nx + i] : 0; const diff = i < nx && a1 !== b1; if (diff && run < 0) run = i; if (!diff && run >= 0) { add(bx0 + run * c, by0 + j * c, bx0 + i * c, by0 + j * c); run = -1; } } }
+    for (let i = 0; i <= nx; i++) { let run = -1; for (let j = 0; j <= ny; j++) { const a1 = i > 0 && j < ny ? M[j * nx + i - 1] : 0, b1 = i < nx && j < ny ? M[j * nx + i] : 0; const diff = j < ny && a1 !== b1; if (diff && run < 0) run = j; if (!diff && run >= 0) { add(bx0 + i * c, by0 + run * c, bx0 + i * c, by0 + j * c); run = -1; } } }
+    g.push('<path d="' + segs.join('') + '" stroke="#222" stroke-width="2.2" fill="none" stroke-linecap="square"/>');
+  }
+  // shadows
+  if (o.live && o.live.up) {
+    g.push('<clipPath id="roofclip">' + R.addP.map(r => '<rect x="' + f(X(r.x0)) + '" y="' + f(Y(r.y1)) + '" width="' + f((r.x1 - r.x0) * sc) + '" height="' + f((r.y1 - r.y0) * sc) + '"/>').join('') + '</clipPath><g clip-path="url(#roofclip)">');
+    o.live.hulls.forEach(poly => g.push('<polygon points="' + poly.map(p => f(X(p[0])) + ',' + f(Y(p[1]))).join(' ') + '" fill="#000" fill-opacity="0.22" stroke="#333" stroke-width="1"/>'));
+    o.live.rows.forEach(poly => g.push('<polygon points="' + poly.map(p => f(X(p[0])) + ',' + f(Y(p[1]))).join(' ') + '" fill="#000" fill-opacity="0.14"/>'));
+    g.push('</g>');
+  } else if (!o.live && o.shadows && R.hulls) {
+    g.push('<clipPath id="roofclip">' + R.addP.map(r => '<rect x="' + f(X(r.x0)) + '" y="' + f(Y(r.y1)) + '" width="' + f((r.x1 - r.x0) * sc) + '" height="' + f((r.y1 - r.y0) * sc) + '"/>').join('') + '</clipPath><g clip-path="url(#roofclip)">');
+    const st = { '09:00': ['#1f5fbf', '5 3'], '12:00': ['#777', '2 2'], '15:00': ['#c4511a', '8 3 2 3'] };
+    for (const t of R.times) for (const h of R.hulls[t.k]) {
+      const pts = h.poly.map(p => f(X(p[0])) + ',' + f(Y(p[1]))).join(' ');
+      g.push('<polygon points="' + pts + '" fill="#000" fill-opacity="0.06" stroke="' + st[t.k][0] + '" stroke-width="1.2" stroke-dasharray="' + st[t.k][1] + '"/>');
+    }
+    g.push('</g>');
+  }
+  // modules
+  if (R.mods) {
+    const strOf = new Map(); (R.strings || []).forEach((s, k) => s.mods.forEach(m => strOf.set(m, k)));
+    for (const m of R.mods) {
+      const k = strOf.has(m) ? strOf.get(m) : 0, r = m.pr;
+      const fill = o.strings ? COLF[k % COLF.length] : '#dbe7f7', stroke = o.strings ? COL[k % COL.length] : '#1f5fbf';
+      g.push('<rect x="' + f(X(r.x0)) + '" y="' + f(Y(r.y1)) + '" width="' + f((r.x1 - r.x0) * sc) + '" height="' + f((r.y1 - r.y0) * sc) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1.3"/>');
+      // low edge marker
+      const fe = cfg.face; const lowSide = fe === 'down' ? [r.x0, r.y0, r.x1, r.y0] : fe === 'up' ? [r.x0, r.y1, r.x1, r.y1] : fe === 'right' ? [r.x1, r.y0, r.x1, r.y1] : [r.x0, r.y0, r.x0, r.y1];
+      g.push('<line x1="' + f(X(lowSide[0])) + '" y1="' + f(Y(lowSide[1])) + '" x2="' + f(X(lowSide[2])) + '" y2="' + f(Y(lowSide[3])) + '" stroke="' + stroke + '" stroke-width="3"/>');
+      if (o.live ? (o.live.frac[m.id] || 0) > 0.05 : m.worst > cfg.shadeThr) g.push('<rect x="' + f(X(r.x0)) + '" y="' + f(Y(r.y1)) + '" width="' + f((r.x1 - r.x0) * sc) + '" height="' + f((r.y1 - r.y0) * sc) + '" fill="url(#ht)" opacity="0.7"/>');
+      if (o.labels) {
+        const sn = strOf.has(m) ? 'S' + (strOf.get(m) + 1) + '-' + (R.strings[strOf.get(m)].mods.indexOf(m) + 1) : String(m.id + 1);
+        g.push('<text x="' + f(X(m.c[0])) + '" y="' + f(Y(m.c[1]) + 4) + '" font-size="11" font-weight="600" text-anchor="middle" fill="' + stroke + '" font-family="Arial">' + sn + '</text>');
+        if (o.ballast) g.push('<text x="' + f(X(m.c[0])) + '" y="' + f(Y(m.c[1]) + 16) + '" font-size="9" text-anchor="middle" fill="#444" font-family="Arial">' + (m.edge ? 'edge ' : '') + m.blocks + ' blk</text>');
+      }
+    }
+  }
+  // wiring
+  if (o.wires && R.strings) {
+    R.strings.forEach((s, k) => {
+      const col = COL[k % COL.length];
+      const pts = s.line.map(p => f(X(p[0])) + ',' + f(Y(p[1]))).join(' ');
+      g.push('<polyline points="' + pts + '" fill="none" stroke="' + col + '" stroke-width="1.6"/>');
+      for (const [h, neg] of [[s.h1, true], [s.h2, false]]) {
+        const hp = h.pts.map(p => f(X(p[0])) + ',' + f(Y(p[1]))).join(' ');
+        g.push('<polyline points="' + hp + '" fill="none" stroke="' + col + '" stroke-width="2.6"' + (neg ? '' : ' stroke-dasharray="7 3"') + '/>');
+        const p0 = h.pts[0]; g.push('<text x="' + f(X(p0[0]) + 7) + '" y="' + f(Y(p0[1]) - 6) + '" font-size="13" font-weight="700" fill="' + col + '" font-family="Arial">' + (neg ? '-' : '+') + '</text>');
+      }
+    });
+  }
+  if (R.entry) {
+    g.push('<circle cx="' + f(X(R.entry[0])) + '" cy="' + f(Y(R.entry[1])) + '" r="6" fill="#fff" stroke="#111" stroke-width="2"/>');
+    g.push('<text x="' + f(X(R.entry[0]) + 9) + '" y="' + f(Y(R.entry[1]) + 4) + '" font-size="11" fill="#111" font-family="Arial">cable entry (wall sleeve)</text>');
+  }
+  // north arrow
+  const na = cfg.northAngle * D2R, cx = o.W - 42, cy = 44;
+  const nx2 = cx + Math.sin(na) * 22, ny2 = cy - Math.cos(na) * 22;
+  g.push('<circle cx="' + cx + '" cy="' + cy + '" r="26" fill="#fff" stroke="#999"/><line x1="' + cx + '" y1="' + cy + '" x2="' + f(nx2) + '" y2="' + f(ny2) + '" stroke="#a1262b" stroke-width="3"/><text x="' + f(cx + Math.sin(na) * 36 - 5) + '" y="' + f(cy - Math.cos(na) * 36 + 5) + '" font-size="13" font-weight="700" font-family="Arial">N</text>');
+  // scale bar
+  const sbY = H - 30; for (let i = 0; i < 5; i++) g.push('<rect x="' + f(pad + i * sc) + '" y="' + sbY + '" width="' + f(sc) + '" height="6" fill="' + (i % 2 ? '#fff' : '#222') + '" stroke="#222"/>');
+  g.push('<text x="' + pad + '" y="' + (sbY + 20) + '" font-size="11" font-family="Arial">0</text><text x="' + f(pad + 5 * sc) + '" y="' + (sbY + 20) + '" font-size="11" font-family="Arial">5 m</text>');
+  const fb = { down: 'bottom', up: 'top', left: 'left', right: 'right' }[cfg.face];
+  g.push('<text x="' + f(pad + 5 * sc + 40) + '" y="' + (sbY + 8) + '" font-size="11" fill="#555" font-family="Arial">Panels face the ' + fb + ' of the plan (low edge = thick line). Roof ' + R.roofArea.toFixed(0) + ' m2.</text>');
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + o.W + ' ' + f(H) + '" font-family="Arial, sans-serif">' + g.join('') + '</svg>';
+}
+
+function sldView(R) {
+  const cfg = R.cfg; if (!R.inv) return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100"><text x="20" y="50" font-size="14" fill="#888">No valid design yet.</text></svg>';
+  const S = R.strings, n = S.length, ph = R.inv.ph;
+  const rowH = 74, H = Math.max(260, n * rowH + 150), W = 1020, g = [];
+  const T = (x, y, s, sz, w, fill, an) => g.push('<text x="' + x + '" y="' + y + '" font-size="' + (sz || 12) + '" font-weight="' + (w || 400) + '" fill="' + (fill || '#222') + '" text-anchor="' + (an || 'start') + '">' + esc(s) + '</text>');
+  const B = (x, y, w, h, t, lines, fill) => { g.push('<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="#fff" stroke="#222" stroke-width="1.6"/><rect x="' + x + '" y="' + y + '" width="' + w + '" height="22" fill="' + (fill || '#2a2f3a') + '"/>'); T(x + w / 2, y + 15, t, 12, 700, '#fff', 'middle'); const mc = Math.floor((w - 14) / 5.6); lines.forEach((l, i) => T(x + 8, y + 40 + i * 15, l.length > mc ? l.slice(0, mc - 1) + '…' : l, 11)); };
+  g.push('<rect width="' + W + '" height="' + H + '" fill="#fff"/>');
+  const top = 30;
+  S.forEach((s, k) => {
+    const y = top + k * rowH, col = COL[k % COL.length];
+    B(14, y, 176, 58, 'STRING S' + (k + 1) + ' -> MPPT' + s.mppt, [s.len + ' x ' + R.panel.Wp + ' Wp', 'Voc ' + s.voc.toFixed(0) + ' V cold | Imp ' + R.panel.Imp + ' A'], col);
+    g.push('<line x1="190" y1="' + (y + 22) + '" x2="262" y2="' + (y + 22) + '" stroke="' + col + '" stroke-width="2"/><line x1="190" y1="' + (y + 36) + '" x2="262" y2="' + (y + 36) + '" stroke="' + col + '" stroke-width="2"/>');
+    T(226, y + 16, '1C ' + s.area + ' mm2 x2', 10, 400, '#444', 'middle'); T(226, y + 50, '~' + (s.loop / 2).toFixed(0) + ' m each', 10, 400, '#777', 'middle');
+    g.push('<line x1="262" y1="' + (y + 22) + '" x2="276" y2="' + (y + 22) + '" stroke="' + col + '" stroke-width="2"/><line x1="262" y1="' + (y + 36) + '" x2="276" y2="' + (y + 36) + '" stroke="' + col + '" stroke-width="2"/>');
+  });
+  const mid = top + (n * rowH - 14) / 2, bh = Math.max(120, n * rowH - 14);
+  B(276, top, 190, bh, 'DC DISTRIBUTION BOX (IP65)', ['Place: inside the cabin / dry shade', ...S.map((s, k) => 'S' + (k + 1) + ': 2P ' + R.isoV + ' V DC isolator, 32 A'), 'Type 2 DC SPD, one per MPPT', 'Earth bar to E1'].slice(0, Math.floor((bh - 30) / 15)));
+  g.push('<line x1="466" y1="' + (mid) + '" x2="520" y2="' + (mid) + '" stroke="#222" stroke-width="2"/>'); T(493, mid - 6, '<3 m', 10, 400, '#777', 'middle');
+  B(520, top, 200, bh, 'INVERTER ' + R.inv.ac + ' kW, ' + R.inv.ph + '-PH', [R.inv.name.replace(/ \(.*$/, ''), R.inv.mppt + ' MPPT, ' + R.inv.imp + ' A / ' + R.inv.isc + ' A', 'MPPT ' + R.inv.mmin + '-' + R.inv.mmax + ' V, max ' + R.inv.vmax + ' V', 'DC/AC ratio ' + R.dcac.toFixed(2), 'Anti-islanding, RCMU, DC switch', 'Wi-Fi / RS-485 monitoring'].slice(0, Math.floor((bh - 30) / 15)));
+  g.push('<line x1="720" y1="' + mid + '" x2="770" y2="' + mid + '" stroke="#222" stroke-width="3"/>'); T(745, mid - 8, 'C4', 11, 700, '#222', 'middle'); T(745, mid + 16, R.acCores + 'x' + R.ac.A + ' mm2', 10, 400, '#555', 'middle'); T(745, mid + 28, cfg.acRun + ' m', 10, 400, '#777', 'middle');
+  B(770, top, 236, bh, 'AC DISTRIBUTION BOX (IP65)', ['Ground floor, by the meter board', R.acCores.replace('C', 'P') + ' ' + R.mcb + ' A C-curve MCB', 'Type A RCCB (if inspector asks)', 'Type 2 AC SPD', 'Lockable AC isolator'].slice(0, Math.floor((bh - 30) / 15)));
+  const y2 = top + bh + 40;
+  g.push('<line x1="888" y1="' + (top + bh) + '" x2="888" y2="' + y2 + '" stroke="#222" stroke-width="3"/>'); T(896, y2 - 14, 'C5 ' + R.acCores + 'x' + R.ac2.A + ' mm2, ' + cfg.dbRun + ' m', 10, 400, '#555');
+  B(770, y2, 236, 56, 'EXISTING MAIN DB', ['Add ' + R.mcb + ' A MCB "SOLAR"', 'Check busbar and earthing']);
+  g.push('<line x1="770" y1="' + (y2 + 38) + '" x2="720" y2="' + (y2 + 38) + '" stroke="#222" stroke-width="3"/>');
+  B(520, y2, 200, 56, 'NET METER (AMI)', ['Bi-directional, RS-485', 'Your electricity company supplies and seals'], '#a1262b');
+  g.push('<line x1="520" y1="' + (y2 + 38) + '" x2="470" y2="' + (y2 + 38) + '" stroke="#222" stroke-width="3"/>');
+  B(270, y2, 200, 56, 'UTILITY GRID', [ph === 3 ? '415 V, 3-phase + N' : '230 V, 1-phase', 'Export surplus, import deficit']);
+  // earth
+  const ey = y2 + 100; g.push('<line x1="14" y1="' + ey + '" x2="1006" y2="' + ey + '" stroke="#2f7a3d" stroke-width="2" stroke-dasharray="7 4"/>');
+  T(14, ey - 6, 'PE / EARTH BONDING: frames, rails, DCDB, inverter, ACDB, main DB -> main earth bar -> pits E1 (structure/DC), E2 (inverter/AC)' + (cfg.la ? ', E3 (lightning mast)' : ''), 11, 400, '#2f7a3d');
+  [['E1', 120], ['E2', 420], ['E3', 700]].forEach(([e, x]) => { if (e === 'E3' && !cfg.la) return; g.push('<line x1="' + x + '" y1="' + ey + '" x2="' + x + '" y2="' + (ey + 14) + '" stroke="#2f7a3d" stroke-width="2"/>'); [14, 10, 6].forEach((w, i) => g.push('<line x1="' + (x - w) + '" y1="' + (ey + 14 + i * 4) + '" x2="' + (x + w) + '" y2="' + (ey + 14 + i * 4) + '" stroke="#2f7a3d" stroke-width="2"/>')); T(x + 20, ey + 30, e + ' pit, 5 ohm or less', 11, 400, '#2f7a3d'); });
+  const H2 = ey + 52;
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H2 + '" font-family="Arial, sans-serif">' + g.join('').replace('height="' + H + '" fill="#fff"', 'height="' + H2 + '" fill="#fff"') + '</svg>';
+}
+
+if (typeof module !== 'undefined') module.exports = { compute, planView, sldView, liveShade, solarOffset, edgeOf, surveyStatus, subsidyFor, SIDES, defaults, PANELS, INVERTERS, CITIES, EXAMPLE };
+</script>
+<script>
+(function () {
+'use strict';
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const h = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const num = (v, d) => { const x = parseFloat(v); return isFinite(x) ? x : d; };
+const fx = (n, d) => (+n).toFixed(d == null ? 1 : d);
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const lakh = n => (n / 1e5).toFixed(2);
+const range = (lo, hi) => (hi < 1e5 ? inr(lo) + ' to ' + inr(hi) : '₹' + lakh(lo) + ' to ' + lakh(hi) + ' lakh');
+
+/* ---------------- state ---------------- */
+const LS = 'slp.v1', LSC = 'slp.cl';
+function exampleState() { const e = JSON.parse(JSON.stringify(EXAMPLE)); return Object.assign(defaults(), e, { kWp: 5, mode: 'retrofit' }); }
+let S = exampleState();
+try { const t = localStorage.getItem(LS); if (t) { const o = JSON.parse(t); if (o && Array.isArray(o.roof) && Array.isArray(o.obstacles)) S = Object.assign(defaults(), o); } } catch (e) { }
+function persist() { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) { } }
+let CL = {}; try { CL = JSON.parse(localStorage.getItem(LSC) || '{}') || {}; } catch (e) { CL = {}; }
+const V = { tab: 'summary', shadows: true, strings: true, ballast: true, pick: false, sh: 'worst', doy: 355, hr: 9, clock: false, prof: null };
+let R = null, err = null, tmr = 0;
+const api = { sample: null, downloads: null, imgs: null };
+
+/* ---------------- inputs ---------------- */
+const F = (l, k, o) => { o = o || {}; return '<label class="f"><span class="l">' + l + '</span><input type="' + (o.t || 'number') + '" data-k="' + k + '"' + (o.step ? ' step="' + o.step + '"' : '') + (o.min != null ? ' min="' + o.min + '"' : '') + (o.max != null ? ' max="' + o.max + '"' : '') + '>' + (o.h ? '<small>' + o.h + '</small>' : '') + '</label>'; };
+const SEL = (l, k, opts, hint) => '<label class="f"><span class="l">' + l + '</span><select data-k="' + k + '">' + opts.map(o => '<option value="' + h(o[0]) + '">' + h(o[1]) + '</option>').join('') + '</select>' + (hint ? '<small>' + hint + '</small>' : '') + '</label>';
+const CK = (l, k) => '<label class="chk"><input type="checkbox" data-k="' + k + '"> ' + l + '</label>';
+const SEG = (k, opts) => '<div class="seg" data-seg="' + k + '" role="group">' + opts.map(o => '<button type="button" data-v="' + o[0] + '">' + o[1] + '</button>').join('') + '</div>';
+
+const SIDE_LAB = { top: 'Top of the plan', right: 'Right of the plan', bottom: 'Bottom of the plan', left: 'Left of the plan' }, SIDE_DIR = { top: 0, right: 90, bottom: 180, left: 270 };
+const sideBearing = sd => ((SIDE_DIR[sd] - (S.northAngle || 0)) % 360 + 360) % 360;
+const compassName = b => ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'][Math.round(b / 45) % 8] + ' (' + Math.round(b) + ' deg)';
+const STATE = { Vadodara: ['Gujarat', 'GEDA', 'MGVCL'], Ahmedabad: ['Gujarat', 'GEDA', 'Torrent Power or UGVCL'], Surat: ['Gujarat', 'GEDA', 'Torrent Power or DGVCL'], Rajkot: ['Gujarat', 'GEDA', 'PGVCL'], Mumbai: ['Maharashtra', 'MEDA', 'Tata Power, Adani, BEST or MSEDCL'], Pune: ['Maharashtra', 'MEDA', 'MSEDCL'], Nagpur: ['Maharashtra', 'MEDA', 'MSEDCL'], Delhi: ['Delhi', 'Delhi energy department', 'BSES Rajdhani, BSES Yamuna or Tata Power-DDL'], Jaipur: ['Rajasthan', 'RRECL', 'JVVNL'], Lucknow: ['Uttar Pradesh', 'UPNEDA', 'MVVNL'], Bengaluru: ['Karnataka', 'KREDL', 'BESCOM'], Chennai: ['Tamil Nadu', 'TEDA', 'TNPDCL'], Hyderabad: ['Telangana', 'TGREDCO', 'TGSPDCL'], Kolkata: ['West Bengal', 'WBREDA', 'CESC or WBSEDCL'] };
+const stateOf = () => STATE[S.city] || ['your state', 'the state nodal agency', 'your electricity company'];
+function buildInputs() {
+  $('#inputs').innerHTML =
+    '<details class="sec" open><summary><span><span class="n">1</span>Roof</span></summary><div class="body">' +
+    '<div class="btns"><button class="btn" type="button" data-act="example">Load example terrace</button><button class="btn" type="button" data-act="clear">Start blank</button></div>' +
+    '<p class="hint">Draw the terrace as rectangles on the plan. x runs left to right, y runs bottom to top, from the bottom-left corner of the roof.</p>' +
+    '<div class="grid2"><div class="f"><span class="l">Unit for lengths</span>' + SEG('unit', [['m', 'Metres'], ['ft', 'Feet']]) + '</div>' +
+    F('North arrow angle (deg)', 'northAngle', { step: 1, h: 'Degrees the north arrow points clockwise from the top of the plan. 0 if north is up.' }) + '</div>' +
+    SEL('Panels look towards', 'face', [['down', 'Bottom of the plan'], ['up', 'Top of the plan'], ['left', 'Left of the plan'], ['right', 'Right of the plan']], 'In India panels face south. With north up, that is the bottom.') +
+    '<div class="f"><span class="l">Building</span>' + SEG('bldgType', [['home', 'Individual home'], ['flats', 'Flats or tower']]) + '</div>' +
+    '<div class="grid2" id="flatsRow">' + F('Floors (with ground floor)', 'floors', { step: 1, min: 1, h: 'Sets the roof height at 3 m a floor.' }) + F('Flats sharing the roof', 'flats', { step: 1, min: 1 }) + '</div>' +
+    '<div class="card"><div class="hd"><b>Find north with a phone compass</b><span class="mini" id="northTxt"></span></div><p class="note">Stand square to a wall or edge, face it, and read the compass. Keep away from steel railings.</p>' +
+    '<div class="grid2"><label class="f"><span class="l">Compass reading (deg)</span><input type="number" step="1" min="0" max="360" data-sv="compass"></label><label class="f"><span class="l">I was facing the</span><select data-sv="compassSide"><option value="top">top of the plan</option><option value="right">right of the plan</option><option value="bottom">bottom of the plan</option><option value="left">left of the plan</option></select></label></div>' +
+    '<div class="btns"><button class="btn sm" type="button" data-act="north-set">Set north from this</button></div>' +
+    '<label class="chk"><input type="checkbox" data-sv="northChecked"> Checked against a timed photo or the satellite view</label></div>' +
+    '<div id="roofRows" style="display:flex;flex-direction:column;gap:8px"></div>' +
+    '<div class="btns"><button class="btn sm" type="button" data-act="add-roof">+ Roof part</button><button class="btn sm" type="button" data-act="add-cut">+ Cut-out</button></div>' +
+    '<h3 style="font-size:13px;margin:4px 0 0">Roof edges, side by side</h3><p class="note">Open railings do not shade but let full wind reach the edge panels. A solid wall shades a little and calms the wind. Enter the solid part\'s height.</p>' +
+    '<div id="edgeRows" style="display:flex;flex-direction:column;gap:6px"></div>' +
+    '<h3 style="font-size:13px;margin:4px 0 0">Things on and around the roof</h3><p class="note">Add trees and neighbouring buildings too, even off the roof: they can cost more than anything on it. Tick Measured once you have taped or counted a height.</p>' +
+    '<div id="obsRows" style="display:flex;flex-direction:column;gap:8px"></div>' +
+    '<div class="btns"><button class="btn sm" type="button" data-act="add-obs">+ Cabin, tank or wall</button><button class="btn sm" type="button" data-act="add-tree">+ Tree</button><button class="btn sm" type="button" data-act="add-near">+ Neighbouring building</button></div>' +
+    '<div class="card"><div class="hd"><b>Cable entry</b><span class="mini" id="entryTxt"></span></div><p class="note">Where the cables go down: a wall sleeve or duct. No roof hole is needed.</p><div class="btns"><button class="btn sm" type="button" data-act="pick">Pick on plan</button><button class="btn sm" type="button" data-act="auto-entry">Automatic</button></div></div>' +
+    '</div></details>' +
+
+    '<details class="sec" open><summary><span><span class="n">1c</span>Site survey: how sure is this?</span><span class="pill" id="svPill"></span></summary><div class="body">' +
+    '<p class="hint">Each answer narrows the error on the yearly units. The Summary tab shows what is still missing.</p>' +
+    '<label class="chk"><input type="checkbox" data-sv="roofTape"> Roof sizes checked with a tape</label>' +
+    '<label class="chk"><input type="checkbox" data-sv="nothingOnRoof"> Nothing at all stands on the roof</label>' +
+    '<label class="chk"><input type="checkbox" data-sv="clearAround"> No trees or taller buildings near the roof</label>' +
+    '<div class="grid2"><label class="f"><span class="l">Date of your roof photos</span><input type="date" data-ph="date"></label><label class="f"><span class="l">Time (clock, IST)</span><input type="time" data-ph="time"></label></div>' +
+    '<div class="grid2"><label class="f"><span class="l">Roof condition</span><select data-sv="roofCond"><option value="">Not checked</option><option value="good">Good, no stains or leaks</option><option value="stains">Stains or old damp marks</option><option value="leaks">Leaks now</option></select></label>' +
+    '<label class="f"><span class="l">Drilling the roof allowed?</span><select data-sv="drill"><option value="">Not decided</option><option value="no">No, ballast only</option><option value="yes">Yes, anchors are fine</option></select></label></div>' +
+    '<label class="f"><span class="l">Site notes (what you saw on the roof)</span><textarea data-k="notes" rows="5" style="font-family:var(--sans);font-size:13px"></textarea></label>' +
+    '</div></details>' +
+
+    '<details class="sec" id="readSec" hidden><summary><span><span class="n">1b</span>Read my drawing with Claude</span></summary><div class="body">' +
+    '<p class="hint">Upload a photo or image of your terrace plan (JPG, PNG, WebP). Claude reads the dimensions and fills in section 1. Check the result against your drawing.</p>' +
+    '<input type="file" id="planFile" accept="image/jpeg,image/png,image/webp,image/gif">' +
+    '<img id="planThumb" class="thumb" alt="Your uploaded plan" hidden>' +
+    '<label class="f"><span class="l">Notes for Claude (optional)</span><textarea id="planNote" rows="3" placeholder="e.g. Plan is in feet. Water tank sits on a 2.4 m stand. North arrow is at top right."></textarea></label>' +
+    '<div class="btns"><button class="btn pri" type="button" data-act="read">Read the plan</button><button class="btn" type="button" data-act="stop" id="stopBtn" hidden>Stop</button></div>' +
+    '<div id="readMsg" aria-live="polite"></div></div></details>' +
+
+    '<details class="sec" open><summary><span><span class="n">2</span>Your system</span></summary><div class="body">' +
+    '<div class="f"><span class="l">Number of panels</span><input type="range" id="nsl" min="1" max="30" step="1" value="8"><span class="mini" id="nlab"></span></div>' +
+    '<div class="grid2">' + F('Target size (kWp)', 'kWp', { step: 0.1, min: 0.5, h: 'Snaps to whole panels.' }) + SEL('Panel', 'panel', Object.keys(PANELS).map(k => [k, PANELS[k].name])) + '</div>' +
+    '<div class="grid3" id="custom" hidden>' + ['Wp:Power W', 'L:Length m', 'W:Width m', 'kg:Weight kg', 'Voc:Voc V', 'Isc:Isc A', 'Vmp:Vmp V', 'Imp:Imp A'].map(s => { const p = s.split(':'); return '<label class="f"><span class="l">' + p[1] + '</span><input type="number" step="any" data-c="' + p[0] + '"></label>'; }).join('') + '</div>' +
+    '<div class="grid2"><div class="f"><span class="l">Panel orientation</span>' + SEG('orient', [['landscape', 'Landscape'], ['portrait', 'Portrait']]) + '</div>' + F('Tilt (deg)', 'tilt', { step: 1, min: 0, max: 30, h: '10 is a good flat-roof value: low wind, short shadows.' }) + '</div>' +
+    '<div class="grid2">' + SEL('City', 'city', CITIES.map(c => [c.n, c.n])) + F('Yield (kWh per kWp per year)', 'yieldKwp', { step: 10, h: 'Planning value for the city. Replace with a PVGIS figure if you have one.' }) + '</div>' +
+    '<div class="grid3">' + F('Latitude', 'lat', { step: 0.01 }) + F('Longitude', 'lon', { step: 0.01 }) + F('Basic wind Vb (m/s)', 'Vb', { step: 1, h: 'IS 875-3 map.' }) + '</div>' +
+    '<div class="grid2">' + F('Roof height above ground (m)', 'bldgH', { step: 0.5, h: 'Wind grows with height.' }) + SEL('Supply', 'supply', [['1', 'Single-phase'], ['3', 'Three-phase']]) + '</div>' +
+    CK('Claim the PM Surya Ghar subsidy (needs made-in-India DCR panels and a registered vendor)', 'subsidy') +
+    '<div class="grid2">' + F('Gap to front edge (m)', 'cFront', { step: 0.1, min: 0 }) + F('Gap to sides and obstacles (m)', 'cSide', { step: 0.1, min: 0 }) + '</div>' +
+    SEL('Inverter', 'inverter', [['auto', 'Choose automatically']].concat(INVERTERS.map(i => [i.id, i.name]))) +
+    '<div class="grid2">' + F('Cable run roof to inverter (m)', 'acRun', { step: 1, min: 1 }) + F('Inverter AC box to main DB (m)', 'dbRun', { step: 1, min: 1 }) + '</div>' +
+    CK('Include lightning mast and pit', 'la') + CK('Allow panels in winter shade (kept on their own string)', 'allowShaded') +
+    '</div></details>' +
+
+    '<details class="sec"><summary><span><span class="n">3</span>Your bills (for savings)</span></summary><div class="body">' +
+    F('Units used per year (kWh)', 'consumption', { step: 100, min: 0, h: 'Add up 12 months of bills. Leave 0 to skip the savings view.' }) +
+    '<div class="grid2">' + F('Value of a unit you use (Rs)', 'saveRate', { step: 0.25, h: 'Your marginal rate including fuel charge and duty.' }) + F('Value of an exported unit (Rs)', 'exportRate', { step: 0.25, h: 'Confirm with your electricity company.' }) + '</div></div></details>' +
+
+    '<details class="sec"><summary><span><span class="n">4</span>Structure and wind (advanced)</span></summary><div class="body">' +
+    '<div class="grid2">' + F('Wind coefficient, interior', 'cpInt', { step: 0.05 }) + F('Wind coefficient, edge', 'cpEdge', { step: 0.05 }) + F('Factor of safety', 'fos', { step: 0.1 }) + F('Block weight (kg)', 'blockKg', { step: 1 }) + F('Minimum blocks per panel', 'minBlocks', { step: 1 }) + F('Rail and clamp weight (kg per panel)', 'structKg', { step: 0.5 }) + F('Edge zone width (m)', 'edgeZone', { step: 0.05 }) + F('Shade limit', 'shadeThr', { step: 0.01 }) + '</div>' +
+    '<p class="note">Wind coefficients are assumptions. At the edge zone 0.8 is common for parapet-less roofs; your structure supplier must give a signed calculation.</p></div></details>' +
+
+    '<details class="sec"><summary><span><span class="n">5</span>Save or load this project</span></summary><div class="body">' +
+    '<textarea id="jsonBox" rows="5" spellcheck="false" aria-label="Project JSON"></textarea><div class="btns"><button class="btn sm" type="button" data-act="copy-json">Copy project</button><button class="btn sm" type="button" data-act="load-json">Load from box</button></div><label class="f"><span class="l">Or open a saved project file (.json)</span><input type="file" id="projFile" accept=".json,application/json"></label><p class="note">Your work is also remembered in this browser.</p></div></details>';
+  rowsHTML(); syncInputs(true);
+}
+
+function rowsHTML() {
+  const rf = (list, i, f, lab, step) => '<label class="f"><span class="l">' + lab + '</span><input type="number" step="' + (step || 0.01) + '" data-list="' + list + '" data-i="' + i + '" data-f="' + f + '" value="' + (S[list][i][f] == null ? '' : S[list][i][f]) + '"></label>';
+  $('#roofRows').innerHTML = S.roof.length ? S.roof.map((r, i) => '<div class="card"><div class="hd"><b>' + (r.mode === 'cut' ? 'Cut-out ' : 'Roof part ') + (i + 1) + '</b><span class="btns"><select data-list="roof" data-i="' + i + '" data-f="mode" style="width:auto" aria-label="Type of part ' + (i + 1) + '"><option value="add"' + (r.mode !== 'cut' ? ' selected' : '') + '>Roof area</option><option value="cut"' + (r.mode === 'cut' ? ' selected' : '') + '>Cut-out</option></select><button class="btn sm" type="button" data-act="del" data-list="roof" data-i="' + i + '">Remove</button></span></div><div class="grid4">' + rf('roof', i, 'x', 'x') + rf('roof', i, 'y', 'y') + rf('roof', i, 'w', 'width') + rf('roof', i, 'h', 'depth') + '</div></div>').join('') : '<p class="hint">No roof yet. Add a roof part, load the example, or read a drawing with Claude.</p>';
+  const ck = (i, f, lab, on) => '<label class="chk"><input type="checkbox" data-list="obstacles" data-i="' + i + '" data-f="' + f + '"' + (on ? ' checked' : '') + '> ' + lab + '</label>';
+  $('#obsRows').innerHTML = S.obstacles.length ? S.obstacles.map((o, i) => '<div class="card"' + (o.tree ? ' style="border-color:#4f9a4a"' : '') + '><div class="hd"><input type="text" data-list="obstacles" data-i="' + i + '" data-f="name" value="' + h(o.name) + '" aria-label="Obstacle name" style="font-weight:600"><button class="btn sm" type="button" data-act="del" data-list="obstacles" data-i="' + i + '">Remove</button></div><div class="grid4">' + rf('obstacles', i, 'x', 'x') + rf('obstacles', i, 'y', 'y') + rf('obstacles', i, 'w', 'width') + rf('obstacles', i, 'h', 'depth') + '</div><div class="grid3">' + rf('obstacles', i, 'h0', o.tree ? 'Canopy starts (m)' : 'Base height (m)') + rf('obstacles', i, 'h1', o.tree ? 'Canopy top (m)' : 'Top height (m)') + (o.tree ? rf('obstacles', i, 'trimTo', 'Can be trimmed to (m)') : '<span></span>') + '</div><div class="btns" style="gap:14px">' + ck(i, 'solid', 'Solid', o.solid !== false && !o.tree) + ck(i, 'tree', 'Tree', !!o.tree) + ck(i, 'measured', 'Measured', !!o.measured) + '</div></div>').join('') : '<p class="hint">None yet. Add the stair cabin, tanks, walls, and any trees or buildings close by.</p>';
+  $('#edgeRows').innerHTML = SIDES.map(sd => { const e = edgeOf(S, sd); return '<div style="display:flex;flex-direction:column;gap:3px"><span class="mini"><b>' + SIDE_LAB[sd] + '</b>, faces ' + compassName(sideBearing(sd)) + '</span><div class="grid2"><label class="f"><span class="l">Edge</span><select data-edge="' + sd + '" data-ef="kind"><option value="railing"' + (e.kind === 'railing' ? ' selected' : '') + '>Railing on a kerb</option><option value="wall"' + (e.kind === 'wall' ? ' selected' : '') + '>Solid wall</option><option value="none"' + (e.kind === 'none' ? ' selected' : '') + '>Nothing</option></select></label><label class="f"><span class="l">Solid height (m)</span><input type="number" step="0.05" min="0" data-edge="' + sd + '" data-ef="h" value="' + e.h + '"></label></div></div>'; }).join('');
+}
+
+function syncInputs(force) {
+  $$('[data-k]').forEach(el => {
+    if (!force && el === document.activeElement) return;
+    const v = S[el.dataset.k];
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? '' : v;
+  });
+  $$('[data-seg]').forEach(g => $$('button', g).forEach(b => b.setAttribute('aria-pressed', String(S[g.dataset.seg] === b.dataset.v))));
+  const cu = $('#custom'); cu.hidden = S.panel !== 'custom';
+  if (S.panel === 'custom') { const c = Object.assign({}, PANELS.custom, S.custom || {}); $$('[data-c]').forEach(el => { if (force || el !== document.activeElement) el.value = c[el.dataset.c]; }); }
+  $('#jsonBox').value = '';
+  const sv = S.survey || {};
+  $$('[data-sv]').forEach(el => { if (!force && el === document.activeElement) return; const v = sv[el.dataset.sv]; if (el.type === 'checkbox') el.checked = !!v; else el.value = v == null ? (el.tagName === 'SELECT' && el.options[0] ? el.options[0].value : '') : v; });
+  const ph = S.photo; if (ph && ph.date) { const d = $('[data-ph="date"]'), t = $('[data-ph="time"]'); if (d && (force || d !== document.activeElement)) d.value = ph.date; if (t && (force || t !== document.activeElement)) t.value = ph.time || ''; }
+  const fr = $('#flatsRow'); if (fr) fr.hidden = S.bldgType !== 'flats';
+  const nt = $('#northTxt'); if (nt) nt.textContent = 'Top of the plan faces ' + compassName(sideBearing('top'));
+}
+
+/* ---------------- computing and derived UI ---------------- */
+function update() { clearTimeout(tmr); tmr = setTimeout(run, 40); }
+function run() {
+  try { R = compute(S); err = null; } catch (e) { err = e; console.error(e); }
+  renderKpis(); renderTab(); derived();
+}
+function derived() {
+  const u = S.unit;
+  $('#entryTxt').textContent = S.entry ? '(' + fx(S.entry.x, 2) + ', ' + fx(S.entry.y, 2) + ') ' + u : 'automatic';
+  const nsl = $('#nsl'); if (!nsl) return;
+  const Wp = R ? R.panel.Wp : 625, cap = R && R.capacity ? R.capacity : 1;
+  nsl.max = Math.max(cap, 1); const tgt = Math.max(1, Math.round(S.kWp * 1000 / Wp)); nsl.value = Math.min(tgt, cap);
+  const got = R && R.N ? R.N : 0;
+  $('#nlab').textContent = got ? got + ' x ' + Wp + ' W = ' + fx(got * Wp / 1000, 2) + ' kWp' + (got < tgt ? ' (you asked for ' + tgt + ')' : '') + '. Roof holds up to ' + cap + '.' : (R && R.empty ? 'Add a roof first.' : 'No panel fits yet.');
+  const k = $('[data-k="kWp"]'); if (k && k !== document.activeElement) k.value = S.kWp;
+  $('#readSec').hidden = !(api.sample && api.imgs);
+  const pl = $('#svPill'); if (pl) pl.textContent = R && R.survey ? R.survey.score + ' of ' + R.survey.n + ' sure' : '';
+}
+
+function renderKpis() {
+  const el = $('#kpis');
+  if (err) { el.innerHTML = '<div class="msg bad" style="grid-column:1/-1">Something in the inputs broke the calculation (' + h(err.message) + '). Check the numbers on the left.</div>'; return; }
+  if (!R || R.empty) { el.innerHTML = '<div class="msg" style="grid-column:1/-1">Add at least one roof area on the left, or load the example terrace.</div>'; return; }
+  if (!R.N) { el.innerHTML = '<div class="msg bad" style="grid-column:1/-1">No panel fits with these clearances. Reduce the gaps, tilt flatter, or check the roof numbers.</div>'; return; }
+  if (!R.inv) { const ok = (R.feasible || []).filter(f => f.ok); el.innerHTML = '<div class="msg bad" style="grid-column:1/-1">No inverter can take ' + R.N + ' panels on this supply.' + (ok.length ? ' Try one of these sizes: <span class="chips" style="display:inline-flex;margin-left:4px">' + ok.slice(0, 5).map(f => '<button type="button" class="chip" data-act="size" data-kwp="' + f.kWp + '">' + f.n + ' panels</button>').join('') + '</span>' : ' Change the size, panel or supply.') + '</div>'; return; }
+  const inv = R.inv, k = (a, b, c, d) => '<div class="kpi"><div class="k">' + a + '</div><div class="v">' + b + '</div><div class="s">' + c + '</div></div>';
+  let pay = '';
+  if (R.eco) pay = k('Payback', fx(R.eco.payLo, 1) + ' to ' + fx(R.eco.payHi, 1) + '<small>years</small>', 'Saves about ' + inr(R.eco.save) + ' a year');
+  else pay = k('Savings', '<small>add yearly units</small>', 'Section 3 on the left');
+  el.innerHTML =
+    k('System size', fx(R.kWp, 2) + '<small>kWp</small>', R.N + ' panels of ' + R.panel.Wp + ' W') +
+    k('Inverter', inv ? inv.ac + '<small>kW ' + inv.ph + '-phase</small>' : '<small>none fits</small>', inv ? 'DC/AC ' + fx(R.dcac, 2) + ', ' + R.strings.length + ' strings' : 'Change size or inverter') +
+    k('Generation', Math.round(R.gen).toLocaleString('en-IN') + '<small>kWh/yr</small>', 'Likely ' + (Math.round(R.genLo / 100) * 100).toLocaleString('en-IN') + ' to ' + (Math.round(R.genHi / 100) * 100).toLocaleString('en-IN') + ' (\u00b1' + Math.round(R.survey.band * 100) + ' %, survey ' + R.survey.score + '/' + R.survey.n + ')') +
+    k('Added roof load', fx(R.load, 0) + '<small>kg/m2</small>', R.blocks + ' blocks, ' + fx(R.massKg / 1000, 1) + ' t in all') +
+    k('Cost (indicative)', '<span style="font-size:17px;white-space:nowrap">' + (R.costHi < 1e5 ? inr(R.costLo) + ' to ' + inr(R.costHi) : '₹' + lakh(R.costLo) + ' to ' + lakh(R.costHi) + ' L') + '</span>', R.subsidy ? 'After subsidy ' + (R.costHi - R.subsidy < 1e5 ? inr(R.costLo - R.subsidy) + ' to ' + inr(R.costHi - R.subsidy) : '\u20b9' + lakh(R.costLo - R.subsidy) + ' to ' + lakh(R.costHi - R.subsidy) + ' L') : 'No subsidy counted') + pay;
+}
+
+/* ---------------- tabs ---------------- */
+const TABS = [['summary', 'Summary'], ['layout', 'Layout'], ['v3d', '3D view'], ['wiring', 'Wiring'], ['sld', 'Single-line'], ['struct', 'Structure'], ['mount', 'Drill or not'], ['bom', 'Cost'], ['check', 'Checklist'], ['vendors', 'Vendors'], ['export', 'Export']];
+function buildTabs() {
+  $('#tabs').innerHTML = TABS.map(t => '<button type="button" role="tab" data-tab="' + t[0] + '" aria-selected="' + (V.tab === t[0]) + '">' + t[1] + '</button>').join('');
+}
+function renderTab() {
+  $$('#tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === V.tab)));
+  const v = $('#view');
+  if (err || !R || R.empty) { v.innerHTML = tabCheck(true); return; }
+  const fn = { summary: tabSummary, layout: tabLayout, v3d: tab3d, wiring: tabWiring, sld: tabSld, struct: tabStruct, mount: tabMount, bom: tabBom, check: tabCheck, vendors: tabVendors, export: tabExport }[V.tab];
+  const needs = ['summary', 'layout', 'v3d', 'wiring', 'sld', 'struct', 'mount', 'bom', 'vendors'].includes(V.tab);
+  if (needs && (!R.N || !R.inv)) { v.innerHTML = '<div class="panelbox">' + checksHTML() + '</div>'; return; }
+  v.innerHTML = fn();
+  if (V.tab === 'layout') fillLayout();
+  if (V.tab === 'v3d') fill3d();
+}
+
+const ORD = { fail: 0, warn: 1, ok: 2 }, IC = { ok: '✓', warn: '!', fail: '✕' };
+function checksHTML() {
+  const cs = (R && R.checks || []).slice().sort((a, b) => ORD[a.lvl] - ORD[b.lvl]);
+  const n = l => cs.filter(c => c.lvl === l).length;
+  return '<h2>Design checks</h2><p class="mini">' + n('fail') + ' to fix, ' + n('warn') + ' to watch, ' + n('ok') + ' passed</p><div class="checks">' +
+    cs.map(c => '<div class="ck ' + c.lvl + '"><span class="ic" aria-label="' + c.lvl + '">' + IC[c.lvl] + '</span><div><b>' + h(c.t) + '</b>' + (c.d ? '<p>' + h(c.d) + '</p>' : '') + '</div></div>').join('') + '</div>';
+}
+function sheet(svg, cls) { return '<div class="sheet ' + (cls || '') + '" id="sheet">' + svg + '</div>'; }
+
+function surveyHTML() {
+  const sv = R.survey; if (!sv) return '';
+  return '<h2>Site survey: ' + sv.score + ' of ' + sv.n + ' sure</h2><p class="mini">Yearly units are good to about \u00b1' + Math.round(sv.band * 100) + ' % with these inputs (' + Math.round(R.genLo).toLocaleString('en-IN') + ' to ' + Math.round(R.genHi).toLocaleString('en-IN') + ' kWh). Each item fixed below narrows that.</p><div class="checks">' +
+    sv.items.slice().sort((a, b) => ORD[a.lvl] - ORD[b.lvl]).map(c => '<div class="ck ' + c.lvl + '"><span class="ic" aria-label="' + c.lvl + '">' + IC[c.lvl] + '</span><div><b>' + h(c.t) + '</b><p>' + h(c.d) + '</p></div></div>').join('') + '</div>';
+}
+let TS = null;
+function treeScen() {
+  if (TS && TS.key === R) return TS.v;
+  const trees = S.obstacles.filter(o => o.tree || /\btree\b/i.test(o.name || ''));
+  if (!trees.length) { TS = { key: R, v: null }; return null; }
+  const run = obs => { try { const r = compute(Object.assign({}, S, { obstacles: obs })); return r.N ? r : null; } catch (e) { return null; } };
+  const trim = S.obstacles.map(o => trees.indexOf(o) >= 0 && o.trimTo != null && o.trimTo < o.h1 ? Object.assign({}, o, { h1: Math.max(o.h0 + 0.3, o.trimTo) }) : o);
+  const v = [['As the trees are now', R], ['Canopy trimmed to the heights you entered', run(trim)], ['Without the trees (for comparison only)', run(S.obstacles.filter(o => trees.indexOf(o) < 0))]].filter(x => x[1]);
+  TS = { key: R, v }; return v;
+}
+function tabSummary() {
+  let o = '<div class="panelbox">' + surveyHTML() + '</div>';
+  const ts = treeScen();
+  if (ts) o += '<div class="panelbox"><h2>What trimming the trees is worth</h2><div class="scroll"><table><thead><tr><th>Trees</th><th class="n">Units a year</th><th class="n">Panel area in shade</th><th class="n">Change</th></tr></thead><tbody>' +
+    ts.map(x => '<tr><td>' + x[0] + '</td><td class="n">' + Math.round(x[1].gen).toLocaleString('en-IN') + '</td><td class="n">' + (x[1].yearShade != null ? Math.round(x[1].yearShade * 100) + ' %' : '-') + '</td><td class="n">' + (x[1] === R ? '-' : (x[1].gen >= R.gen ? '+' : '') + Math.round(x[1].gen - R.gen).toLocaleString('en-IN')) + '</td></tr>').join('') +
+    '</tbody></table></div><p class="note" style="margin-top:6px">Same panel count; the layout may move. Trim before winter, when shadows are longest. Mango and other fast trees need it every year or two.' + (S.saveRate ? ' Each 100 units is worth about ' + inr(100 * S.saveRate) + ' a year.' : '') + '</p></div>';
+  if (S.bldgType === 'flats') o += '<div class="panelbox"><h2>For the society</h2><div class="scroll"><table><tbody><tr><td>Flats sharing</td><td class="n">' + (S.flats || 1) + '</td></tr><tr><td>Units per flat per year (if shared equally)</td><td class="n">' + Math.round(R.perFlat || 0).toLocaleString('en-IN') + '</td></tr><tr><td>Subsidy for common facilities</td><td class="n">' + inr(R.subsidy || 0) + '</td></tr></tbody></table></div><p class="note" style="margin-top:6px">Choose: a common meter (lifts, pumps, lights) or units shared to flats through group or virtual net metering, where your electricity company allows it.</p></div>';
+  o += '<div class="panelbox"><h2>Layout at a glance</h2>' + sheet(planView(R, { shadows: false, strings: true, ballast: false, labels: false, W: 900 })) +
+    '<p class="note" style="margin-top:8px">Rows are ' + fx(R.pitch, 2) + ' m apart so they do not shade each other on 21 December. Open the Layout tab for shadows and block counts.</p></div>';
+  o += '<div class="panelbox">' + checksHTML() + '</div>';
+  if (S.notes && String(S.notes).trim()) o += '<div class="panelbox"><h2>Site notes</h2><div style="white-space:pre-wrap;font-size:13px;color:var(--ink2)">' + h(S.notes) + '</div></div>';
+  if (R.feasible && R.feasible.length) {
+    o += '<div class="panelbox"><h2>Sizes that work on this roof</h2><p class="hint" style="margin-bottom:8px">Each size is checked against the string and inverter limits. Tap one to use it.</p><div class="chips">' +
+      R.feasible.map(f => '<button type="button" class="chip' + (f.ok ? '' : ' no') + '" data-act="size" data-kwp="' + f.kWp + '" aria-pressed="' + (f.n === R.N) + '">' + f.n + ' panels, ' + fx(f.kWp, 2) + ' kWp' + (f.ok ? ', ' + f.inv.ac + ' kW inv.' : ', no inverter') + '</button>').join('') + '</div></div>';
+  }
+  if (R.eco) {
+    const e = R.eco;
+    o += '<div class="panelbox"><h2>What it saves</h2><div class="scroll"><table><tbody>' +
+      '<tr><td>Generation per year</td><td class="n">' + Math.round(R.gen).toLocaleString('en-IN') + ' kWh</td></tr>' +
+      '<tr><td>Your use per year</td><td class="n">' + Math.round(S.consumption).toLocaleString('en-IN') + ' kWh</td></tr>' +
+      '<tr><td>Used in the house (valued at Rs ' + S.saveRate + ')</td><td class="n">' + Math.round(e.self).toLocaleString('en-IN') + ' kWh</td></tr>' +
+      '<tr><td>Exported (valued at Rs ' + S.exportRate + ')</td><td class="n">' + Math.round(e.exp).toLocaleString('en-IN') + ' kWh</td></tr>' +
+      '<tr class="tot"><td>Saving per year</td><td class="n">' + inr(e.save) + '</td></tr>' +
+      '<tr><td>Simple payback (no subsidy)</td><td class="n">' + fx(e.payLo, 1) + ' to ' + fx(e.payHi, 1) + ' years</td></tr></tbody></table></div>' +
+      '<p class="hint" style="margin-top:10px">A system that makes about what you use is ' + fx(e.rightKwp, 1) + ' kWp (' + Math.ceil(e.rightKwp * 1000 / R.panel.Wp) + ' panels). Bigger systems mostly export at a low rate.</p>' +
+      '<div class="btns" style="margin-top:8px"><button type="button" class="btn sm" data-act="size" data-kwp="' + (Math.ceil(e.rightKwp * 1000 / R.panel.Wp) * R.panel.Wp / 1000) + '">Use ' + Math.ceil(e.rightKwp * 1000 / R.panel.Wp) + ' panels</button></div></div>';
+  }
+  return o;
+}
+
+const hhmm = x => { const m = Math.round(x * 60), hh = Math.floor(m / 60), mm = m % 60; return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm; };
+const solarOff = () => (R && R.cfg ? solarOffset(R.cfg, V.doy) : 0);
+const sHr = () => V.hr + (V.clock ? solarOff() : 0);
+const tLabel = () => V.clock ? hhmm(V.hr) + ' IST (solar ' + hhmm(V.hr + solarOff()) + ')' : hhmm(V.hr) + ' solar time';
+function liveControls() {
+  const photo = S.photo && S.photo.doy ? '<button type="button" class="chip" data-act="photo" aria-pressed="' + (V.doy === S.photo.doy && V.clock && Math.abs(V.hr - S.photo.hour) < 0.02) + '" title="Compare the shadows with your photos">' + h(S.photo.label || 'Photo time') + '</button>' : '';
+  return '<div class="chips">' + DATES.map(d => '<button type="button" class="chip" data-act="date" data-d="' + d[1] + '" title="' + d[2] + '" aria-pressed="' + (V.doy === d[1]) + '">' + d[0] + '</button>').join('') + '<button type="button" class="chip" data-act="now" title="Today and the time on your device">Now</button>' + photo + '</div>' +
+    '<div class="grid2"><label class="f"><span class="l">Date: <b id="dayLab"></b></span><input type="range" min="1" max="365" step="1" data-sl="doy" value="' + V.doy + '"></label>' +
+    '<label class="f"><span class="l">Time: <b id="hrLab"></b></span><input type="range" min="5" max="19.5" step="0.0166667" data-sl="hr" value="' + V.hr + '"></label></div>' +
+    '<div class="f"><span class="l">Time shown as</span><div class="seg" role="group" aria-label="Time basis"><button type="button" data-act="basis" data-b="solar" aria-pressed="' + !V.clock + '">Solar time</button><button type="button" data-act="basis" data-b="clock" aria-pressed="' + V.clock + '">Clock time (IST)</button></div></div>' +
+    '<p class="note">Solar time: the sun is due south at 12:00. Clock time is converted with your longitude and the date (in western India sun time runs 20 to 60 minutes behind the clock). Shadows come from the cabin, tank, trees you add, every panel row and the parapet.</p>';
+}
+const dayLabel = doy => new Date(2026, 0, doy).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+const compass = b => ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(b / 45) % 8];
+const DATES = [['21 Dec', 355, 'shortest day'], ['21 Mar', 80, 'equinox'], ['21 Jun', 172, 'longest day'], ['21 Sep', 264, 'equinox']];
+function tabLayout() {
+  const tg = (k, l) => '<label class="chk"><input type="checkbox" data-v="' + k + '"' + (V[k] ? ' checked' : '') + '> ' + l + '</label>';
+  const live = V.sh === 'live';
+  return '<div class="panelbox"><h2>Panel layout and shadows</h2>' +
+    '<div class="tool"><div class="seg" role="group" aria-label="Shadow view"><button type="button" data-act="shmode" data-m="worst" aria-pressed="' + !live + '">Worst winter day</button><button type="button" data-act="shmode" data-m="live" aria-pressed="' + live + '">Pick date and time</button></div>' +
+    (live ? '' : tg('shadows', 'Show shadows of tank and cabin')) + tg('strings', 'Colour by string') + tg('ballast', 'Show ballast blocks') +
+    '<button class="btn sm" type="button" data-act="pick">' + (V.pick ? 'Click the plan now (Esc to cancel)' : 'Move cable entry') + '</button></div>' +
+    (live ? '<div class="card" style="margin-bottom:10px">' + liveControls() + '</div>' : '') +
+    '<div id="planOut"></div><div id="liveInfo"></div></div>';
+}
+function profile(doy) {
+  if (V.prof && V.prof.doy === doy && V.prof.key === R && V.prof.clock === V.clock) return V.prof.v;
+  const v = [], off = V.clock ? solarOff() : 0; for (let x = 6; x <= 18; x += 0.5) { const L = liveShade(R, doy, x + off); v.push({ x, up: L.up, alt: L.alt, avg: L.avg, n: L.shadedN }); }
+  V.prof = { doy, key: R, clock: V.clock, v }; return v;
+}
+function fillLayout() {
+  const po = $('#planOut'); if (!po || !R || !R.N) return;
+  const live = V.sh === 'live' ? liveShade(R, V.doy, sHr()) : null;
+  po.innerHTML = sheet(planView(R, { shadows: V.shadows, live: live, strings: V.strings, ballast: V.ballast, wires: false, W: 980 }), V.pick ? 'pick' : '');
+  const info = $('#liveInfo'); let t = '';
+  if (live) {
+    $('#dayLab').textContent = dayLabel(V.doy); $('#hrLab').textContent = tLabel();
+    if (!live.up) t += '<p class="msg" style="margin-top:10px">The sun is below the horizon at this time.</p>';
+    else t += '<p class="hint" style="margin-top:10px">Sun is ' + fx(live.alt, 0) + ' deg above the horizon, in the ' + compass(live.bearing) + '. <b>' + live.shadedN + ' of ' + R.N + ' panels</b> have shade on more than 5 % of their area. Average shaded area is ' + fx(live.avg * 100, 0) + ' %. Hatched panels are shaded.</p>';
+    const pr = profile(V.doy), W = 560, Hh = 110, bw = W / pr.length;
+    let wsum = 0, lost = 0; pr.forEach(q => { if (q.up && q.alt > 5) { const w = Math.sin(q.alt * Math.PI / 180); wsum += w; lost += w * q.avg; } });
+    t += '<h3>Shaded area through the day (' + dayLabel(V.doy) + ')</h3><div class="scroll"><svg viewBox="0 0 ' + W + ' ' + (Hh + 28) + '" width="100%" style="min-width:420px;max-width:760px" role="img" aria-label="Shaded panel area by hour">' +
+      pr.map((q, i) => { const hh = q.up ? Math.max(1, q.avg * Hh) : 0, cur = Math.abs(q.x - V.hr) < 0.26; return '<rect x="' + (i * bw + 2) + '" y="' + (Hh - hh) + '" width="' + (bw - 4) + '" height="' + hh + '" style="fill:' + (cur ? 'var(--sun)' : 'var(--accent)') + '"><title>' + hhmm(q.x) + ': ' + (q.up ? fx(q.avg * 100, 0) + ' % shaded' : 'sun down') + '</title></rect>' + (q.up ? '' : '<rect x="' + (i * bw + 2) + '" y="' + (Hh - 3) + '" width="' + (bw - 4) + '" height="3" style="fill:var(--line2)"/>') + (i % 2 === 0 ? '<text x="' + (i * bw + bw / 2) + '" y="' + (Hh + 16) + '" text-anchor="middle" font-size="10" style="fill:var(--ink2)">' + q.x + '</text>' : ''); }).join('') +
+      '<line x1="0" y1="' + Hh + '" x2="' + W + '" y2="' + Hh + '" style="stroke:var(--line2)"/></svg></div>' +
+      '<p class="note">Bar height is the share of panel area in shade (full height = all of it). About ' + fx(wsum ? lost / wsum * 100 : 0, 1) + ' % of that day\'s sunshine on the panels is blocked, by area. Panels with bypass diodes lose a little more than the area suggests. The design only guarantees no shade 09:00 to 15:00 on 21 Dec.</p>';
+  } else {
+    t += '<div class="legend"><span>Thick line on a panel is its low edge.</span><span>Shadows on 21 Dec: blue 09:00, grey 12:00, orange 15:00.</span><span>Row pitch ' + fx(R.pitch, 2) + ' m, tilt ' + S.tilt + ' deg.</span></div>';
+  }
+  t += '<p class="note" style="margin-top:6px">Roof ' + fx(R.roofArea, 0) + ' m2, usable ' + fx(R.usableArea, 0) + ' m2 after gaps. Capacity ' + R.capacity + ' panels.</p>';
+  info.innerHTML = t;
+}
+
+function tabWiring() {
+  const S2 = R.strings || [], inv = R.inv;
+  let o = '<div class="panelbox"><h2>DC wiring</h2>' + sheet(planView(R, { shadows: false, strings: true, ballast: false, wires: true, labels: true, W: 980 })) +
+    '<div class="legend"><span>Thin line: panel to panel inside a string.</span><span>Solid thick: negative (-) home run. Dashed thick: positive (+) home run.</span><span>Circle: where cables leave the roof.</span></div>';
+  if (S2.length) {
+    o += '<h3>Strings</h3><div class="scroll"><table><thead><tr><th>String</th><th class="n">Panels</th><th class="n">MPPT</th><th class="n">Voc cold</th><th class="n">Vmp hot</th><th class="n">Cable</th><th class="n">Loop</th><th class="n">Drop</th><th>Notes</th></tr></thead><tbody>' +
+      S2.map((s, i) => '<tr><td>S' + (i + 1) + '</td><td class="n">' + s.len + '</td><td class="n">' + s.mppt + '</td><td class="n">' + fx(s.voc, 0) + ' V</td><td class="n">' + fx(s.vmpH, 0) + ' V</td><td class="n">' + s.area + ' mm2</td><td class="n">' + fx(s.loop, 0) + ' m</td><td class="n">' + fx(s.dvPct, 2) + ' %</td><td>' + (s.shaded ? 'Winter shade; own MPPT. ' : '') + (s.crossObs ? 'Route crosses an obstacle: check conduit path. ' : '') + '</td></tr>').join('') + '</tbody></table></div>';
+  }
+  if (inv) {
+    o += '<h3>Inverter window</h3><p class="mini">' + h(inv.name.replace(/ \(.*$/, '')) + ': MPPT ' + inv.mmin + ' to ' + inv.mmax + ' V, max ' + inv.vmax + ' V, ' + inv.imp + ' A per input. Coldest-morning Voc is calculated at 5 C and hottest-afternoon Vmp at 75 C.</p>';
+    o += '<h3>AC side and protection</h3><div class="scroll"><table><tbody>' +
+      '<tr><td>Inverter output current</td><td class="n">' + fx(R.Iac, 1) + ' A</td></tr>' +
+      '<tr><td>Inverter to AC box</td><td class="n">' + R.acCores + ' x ' + R.ac.A + ' mm2 Cu armoured, ' + S.acRun + ' m, drop ' + fx(R.ac.dvPct, 2) + ' %</td></tr>' +
+      '<tr><td>AC box to main DB</td><td class="n">' + R.acCores + ' x ' + R.ac2.A + ' mm2 Cu, ' + S.dbRun + ' m, drop ' + fx(R.ac2.dvPct, 2) + ' %</td></tr>' +
+      '<tr><td>AC breaker</td><td class="n">' + R.mcb + ' A ' + (inv.ph === 3 ? '4-pole' : '2-pole') + ' C-curve</td></tr>' +
+      '<tr><td>DC isolators</td><td class="n">' + S2.length + ' x ' + R.isoV + ' V DC, one per string</td></tr>' +
+      '<tr><td>Surge protection</td><td class="n">Type 2 on DC (per MPPT) and on AC</td></tr>' +
+      '<tr><td>Earthing</td><td class="n">' + (S.la ? '3' : '2') + ' pits: structure and DC, inverter and AC' + (S.la ? ', lightning mast' : '') + '. 5 ohm or less each</td></tr></tbody></table></div>';
+  }
+  return o + '</div>';
+}
+
+function tabSld() {
+  return '<div class="panelbox"><h2>Single-line diagram</h2>' + sheet(sldView(R)) + '<p class="note" style="margin-top:8px">Generated from your layout. Cable sizes are from voltage drop and current. The contractor confirms them on site.</p></div>';
+}
+
+function tabStruct() {
+  const w = R.wind, sOf = new Map(); (R.strings || []).forEach((s, k) => s.mods.forEach(m => sOf.set(m, k + 1)));
+  let o = '<div class="panelbox"><h2>Ballast and wind</h2><div class="kpis">' +
+    '<div class="kpi"><div class="k">Design wind speed</div><div class="v">' + fx(w.Vz, 1) + '<small>m/s</small></div><div class="s">Vb ' + S.Vb + ' x k2 ' + fx(w.k2, 2) + '</div></div>' +
+    '<div class="kpi"><div class="k">Wind pressure</div><div class="v">' + fx(w.pz, 2) + '<small>kN/m2</small></div><div class="s">0.6 Vz squared</div></div>' +
+    '<div class="kpi"><div class="k">Ballast</div><div class="v">' + R.blocks + '<small>blocks</small></div><div class="s">' + fx(R.ballastKg / 1000, 2) + ' t of ' + S.blockKg + ' kg blocks</div></div>' +
+    '<div class="kpi"><div class="k">Roof load</div><div class="v">' + fx(R.load, 0) + '<small>kg/m2</small></div><div class="s">' + fx(R.massKg / 1000, 2) + ' t over ' + fx(R.footprint, 0) + ' m2</div></div></div>' +
+    '<p class="hint" style="margin-top:10px">Each panel is held down by dead weight alone, so no drilling. Edge and corner panels see more suction and get more blocks. ' + R.nEdge + ' of ' + R.N + ' panels are in the edge zone.</p></div>';
+  o += '<div class="panelbox"><h2>Block schedule per panel</h2><div class="scroll"><table><thead><tr><th>Panel</th><th class="n">String</th><th>Zone</th><th class="n">Uplift</th><th class="n">Blocks</th><th class="n">Safety factor</th></tr></thead><tbody>' +
+    R.mods.map((m, i) => '<tr><td>' + (i + 1) + '</td><td class="n">' + (sOf.get(m) ? 'S' + sOf.get(m) : '-') + '</td><td>' + (m.edge ? 'Edge' : 'Interior') + '</td><td class="n">' + fx(m.uplift, 0) + ' kg</td><td class="n">' + m.blocks + '</td><td class="n">' + fx(m.fosAch, 2) + '</td></tr>').join('') + '</tbody></table></div>' +
+    '<p class="note" style="margin-top:8px">Uplift uses the coefficients in section 4 (interior ' + S.cpInt + ', edge ' + S.cpEdge + '). They are assumptions. Get a signed IS 875-3 calculation from the supplier and a structural certificate for the slab before ordering.</p></div>';
+  return o;
+}
+
+function tabBom() {
+  const rows = R.bom.map(b => '<tr><td>' + h(b.i) + '</td><td class="n">' + h(b.q) + '</td><td class="n">' + (b.lo || b.hi ? inr(b.lo) + ' to ' + inr(b.hi) : h(b.note || '-')) + '</td></tr>').join('');
+  return '<div class="panelbox"><h2>Bill of materials and cost</h2><div class="scroll"><table><thead><tr><th>Item</th><th class="n">Quantity</th><th class="n">Indicative cost</th></tr></thead><tbody>' + rows +
+    '<tr class="tot"><td>Total, before subsidy and GST effects</td><td></td><td class="n">' + inr(R.costLo) + ' to ' + inr(R.costHi) + '</td></tr></tbody></table></div>' +
+    '<p class="note" style="margin-top:8px">Indicative Indian market ranges for planning. Get three written quotes. Brand, structure type and site access move these numbers.</p></div>';
+}
+
+/* ---------------- 3D view ---------------- */
+const V3 = { az: null, el: 32, zoom: 1.3, ballast: true, shadows: true, strings: true };
+const vsub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], vdot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const vcross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const vnorm = a => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+const faceAz = () => ({ down: 0, right: 90, up: 180, left: 270 }[S.face] || 0);
+function mkFace(pts, c, extra) {
+  let n = vnorm(vcross(vsub(pts[1], pts[0]), vsub(pts[2], pts[0])));
+  const fc = [0, 1, 2].map(i => pts.reduce((t, p) => t + p[i], 0) / pts.length);
+  if (vdot(n, vsub(fc, c)) < 0) n = [-n[0], -n[1], -n[2]];
+  return Object.assign({ p: pts, n, c: fc }, extra || {});
+}
+function boxObj(x0, y0, z0, x1, y1, z1, col, extra) {
+  const c = [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2];
+  const q = [[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]];
+  const F = [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7]];
+  return Object.assign({ c, faces: F.map(f => mkFace(f.map(i => q[i]), c, { col })) }, extra || {});
+}
+let G3 = null;
+function geom3D() {
+  if (G3 && G3.key === R && G3.shl === V3.ballast) return G3;
+  const g = { key: R, shl: V3.ballast, tops: [], walls: [], pool: [], labels: [] };
+  const cfg = R.cfg, c = 0.1, bx0 = Math.min.apply(null, R.addP.map(r => r.x0)), by0 = Math.min.apply(null, R.addP.map(r => r.y0)), bx1 = Math.max.apply(null, R.addP.map(r => r.x1)), by1 = Math.max.apply(null, R.addP.map(r => r.y1));
+  const nx = Math.ceil((bx1 - bx0) / c), ny = Math.ceil((by1 - by0) / c), M = new Uint8Array(nx * ny);
+  const fill = (r, v) => { const i0 = Math.max(0, Math.ceil((r.x0 - bx0) / c - 0.5)), i1 = Math.min(nx - 1, Math.floor((r.x1 - bx0) / c - 0.5)), j0 = Math.max(0, Math.ceil((r.y0 - by0) / c - 0.5)), j1 = Math.min(ny - 1, Math.floor((r.y1 - by0) / c - 0.5)); for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) M[j * nx + i] = v; };
+  R.addP.forEach(r => fill(r, 1)); R.cutP.forEach(r => fill(r, 0));
+  const cell = (i, j) => (i < 0 || j < 0 || i >= nx || j >= ny) ? 0 : M[j * nx + i];
+  const inSolid = (x, y) => R.obsP.some(o => o.solid && x >= o.x0 - 0.02 && x <= o.x1 + 0.02 && y >= o.y0 - 0.02 && y <= o.y1 + 0.02);
+  g.bbox = { bx0, by0, bx1, by1 };
+  R.addP.forEach(r => g.tops.push({ p: [[r.x0, r.y0, 0], [r.x1, r.y0, 0], [r.x1, r.y1, 0], [r.x0, r.y1, 0]], col: [226, 221, 205] }));
+  R.cutP.forEach(r => g.tops.push({ p: [[r.x0, r.y0, 0.01], [r.x1, r.y0, 0.01], [r.x1, r.y1, 0.01], [r.x0, r.y1, 0.01]], col: [120, 116, 106] }));
+  // boundary runs -> walls below the roof and parapet boxes on top
+  const runs = [];
+  for (let j = 0; j <= ny; j++) { let st = -1, dir = 0; for (let i = 0; i <= nx; i++) { const a = cell(i, j - 1), b = cell(i, j), d = i < nx ? (b - a) : 0; if (d !== dir || i === nx) { if (st >= 0 && dir !== 0) runs.push({ h: true, pos: by0 + j * c, s0: bx0 + st * c, s1: bx0 + i * c, inn: dir }); st = d !== 0 ? i : -1; dir = d; } } }
+  for (let i = 0; i <= nx; i++) { let st = -1, dir = 0; for (let j = 0; j <= ny; j++) { const a = cell(i - 1, j), b = cell(i, j), d = j < ny ? (b - a) : 0; if (d !== dir || j === ny) { if (st >= 0 && dir !== 0) runs.push({ h: false, pos: bx0 + i * c, s0: by0 + st * c, s1: by0 + j * c, inn: dir }); st = d !== 0 ? j : -1; dir = d; } } }
+  const pt = 0.115;
+  for (const r of runs) {
+    const sd = r.h ? (r.inn > 0 ? 'bottom' : 'top') : (r.inn > 0 ? 'left' : 'right'), ed = edgeOf(cfg, sd), ph = ed.h;
+    const mid = (r.s0 + r.s1) / 2, ox = r.h ? mid : r.pos - r.inn * 0.15, oy = r.h ? r.pos - r.inn * 0.15 : mid;
+    if (inSolid(ox, oy)) continue;
+    const q = r.h ? [[r.s0, r.pos, -3], [r.s1, r.pos, -3], [r.s1, r.pos, 0], [r.s0, r.pos, 0]] : [[r.pos, r.s0, -3], [r.pos, r.s1, -3], [r.pos, r.s1, 0], [r.pos, r.s0, 0]];
+    const out = r.h ? [0, -r.inn, 0] : [-r.inn, 0, 0], cen = [(q[0][0] + q[2][0]) / 2, (q[0][1] + q[2][1]) / 2, -1.5];
+    g.walls.push({ p: q, n: out, c: cen, col: [214, 205, 184] });
+    const bx = (s, e, z0, z1, col, w) => { const ww = w || pt, b = r.h ? boxObj(s, Math.min(r.pos, r.pos + r.inn * ww), z0, e, Math.max(r.pos, r.pos + r.inn * ww), z1, col) : boxObj(Math.min(r.pos, r.pos + r.inn * ww), s, z0, Math.max(r.pos, r.pos + r.inn * ww), e, z1, col); b.kind = 'parapet'; g.pool.push(b); };
+    for (let s = r.s0; s < r.s1 - 1e-6; s += 1.5) {
+      const e = Math.min(r.s1, s + 1.5);
+      if (ph > 0.02) bx(s, e, 0, ph, [236, 230, 214]);
+      if (ed.kind === 'railing') { bx(s, Math.min(e, s + 0.3), Math.max(ph, 0), 1.05, [244, 241, 232], 0.3); bx(s, e, 0.92, 0.97, [50, 50, 50], 0.05); bx(s, e, 0.55, 0.58, [50, 50, 50], 0.05); }
+    }
+  }
+  // obstacles
+  for (const o of R.obsP) {
+    if (o.h1 <= 0) continue;
+    const cx = (o.x0 + o.x1) / 2, cy = (o.y0 + o.y1) / 2;
+    if (o.solid) { const base = cell(Math.floor((cx - bx0) / c), Math.floor((cy - by0) / c)) ? 0 : -3; const b = boxObj(o.x0, o.y0, base, o.x1, o.y1, o.h1, [201, 190, 168]); b.kind = 'solid'; g.pool.push(b); }
+    else if (o.tree) {
+      const b = boxObj(o.x0, o.y0, o.h0, o.x1, o.y1, o.h1, [79, 154, 74]); b.kind = 'tree'; g.pool.push(b);
+      const tw = 0.4, tx = cx - tw / 2, ty = cy - tw / 2; const l = boxObj(tx, ty, -3, tx + tw, ty + tw, o.h0, [110, 80, 50]); l.kind = 'leg'; g.pool.push(l);
+    }
+    else {
+      const b = boxObj(o.x0, o.y0, o.h0, o.x1, o.y1, o.h1, [120, 150, 178]); b.kind = 'tank'; g.pool.push(b);
+      const onSolid = R.obsP.some(q => q !== o && q.solid && cx >= q.x0 && cx <= q.x1 && cy >= q.y0 && cy <= q.y1 && q.h1 >= o.h0 - 0.05);
+      if (!onSolid) for (const [lx, ly] of [[o.x0, o.y0], [o.x1 - 0.1, o.y0], [o.x0, o.y1 - 0.1], [o.x1 - 0.1, o.y1 - 0.1]]) { const l = boxObj(lx, ly, 0, lx + 0.1, ly + 0.1, o.h0, [90, 90, 90]); l.kind = 'leg'; g.pool.push(l); }
+    }
+    g.labels.push({ t: o.name, p: [cx, cy, o.h1] });
+  }
+  // panels and ballast
+  const face = cfg.face, { rise } = R.mod, sOf = new Map(); (R.strings || []).forEach((s, k) => s.mods.forEach(m => sOf.set(m, k)));
+  R.mods.forEach(m => {
+    const f = m.fr, P = (x, y, z) => { const q = fromFrame(face, x, y); return [q[0], q[1], z]; };
+    const L0 = P(f.x0, f.y0, 0), L1 = P(f.x1, f.y0, 0), H0 = P(f.x0, f.y1, rise), H1 = P(f.x1, f.y1, rise), B0 = P(f.x0, f.y1, 0), B1 = P(f.x1, f.y1, 0);
+    const cen = [(L0[0] + H1[0]) / 2, (L0[1] + H1[1]) / 2, rise / 3], col = [60, 70, 85];
+    const fc = [mkFace([L0, L1, H1, H0], cen, { plate: true, col: [35, 64, 122] }), mkFace([H0, H1, B1, B0], cen, { col }), mkFace([L0, H0, B0], cen, { col }), mkFace([L1, H1, B1], cen, { col })];
+    g.pool.push({ c: cen, faces: fc, kind: 'panel', m, str: sOf.has(m) ? sOf.get(m) : 0, L0, L1, H0 });
+    if (V3.ballast) {
+      const a = f.x1 - f.x0, per = Math.max(1, Math.min(7, Math.floor(a / 0.34))), n = m.blocks; let k = 0;
+      for (let row = 0; k < n && row < 6; row++) for (let i = 0; i < per && k < n; i++, k++) {
+        const x = f.x0 + (i + 0.5) * a / per - 0.15, y = f.y1 - 0.1 - 0.25 * (row + 1);
+        const q = rectP(face, { x0: x, y0: y, x1: x + 0.3, y1: y + 0.225 });
+        const bl = boxObj(q.x0, q.y0, 0, q.x1, q.y1, 0.15, [150, 150, 144]); bl.kind = 'block'; g.pool.push(bl);
+      }
+    }
+  });
+  G3 = g; return g;
+}
+function render3D(forExport) {
+  const g = geom3D(), W = 980, H = 620, cfg = R.cfg, D = Math.PI / 180;
+  if (V3.az == null) V3.az = faceAz() + 25;
+  const live = V3.shadows ? liveShade(R, V.doy, sHr()) : null;
+  const L = live && live.up ? vnorm(live.sun) : vnorm([0.35, -0.5, 0.8]);
+  const th = V3.az * D, ph = V3.el * D;
+  const v = [Math.sin(th) * Math.cos(ph), -Math.cos(th) * Math.cos(ph), Math.sin(ph)], r = [Math.cos(th), Math.sin(th), 0], u = [-Math.sin(th) * Math.sin(ph), Math.cos(th) * Math.sin(ph), Math.cos(ph)];
+  const bb = g.bbox, T = [(bb.bx0 + bb.bx1) / 2, (bb.by0 + bb.by1) / 2, -0.4], Rr = 0.5 * Math.hypot(bb.bx1 - bb.bx0, bb.by1 - bb.by0), sc = Math.min(W, H) * 0.5 / Rr * 0.8 * V3.zoom;
+  const pr = p => { const q = vsub(p, T); return [(W / 2 + vdot(q, r) * sc).toFixed(1), (H / 2 + 10 - vdot(q, u) * sc).toFixed(1)]; };
+  const dep = c => vdot(vsub(c, T), v);
+  const lit = (col, n, bright) => { const f = Math.min(1.1, 0.5 + 0.5 * Math.max(0, vdot(n, L)) + 0.12 * Math.max(0, n[2])) * (bright || 1); return 'rgb(' + col.map(x => Math.max(0, Math.min(255, Math.round(x * f)))).join(',') + ')'; };
+  const poly = (pts, fill, stroke, sw) => '<polygon points="' + pts.map(p => pr(p).join(',')).join(' ') + '" fill="' + fill + '"' + (stroke ? ' stroke="' + stroke + '" stroke-width="' + (sw || 0.6) + '" stroke-linejoin="round"' : '') + '/>';
+  const o = [];
+  o.push('<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe9f5"/><stop offset="1" stop-color="#f3f6fa"/></linearGradient><clipPath id="c3">' + g.tops.map(t => '<polygon points="' + t.p.map(p => pr(p).join(',')).join(' ') + '"/>').join('') + '</clipPath></defs><rect width="' + W + '" height="' + H + '" fill="url(#sky)"/>');
+  // building walls
+  g.walls.filter(w => vdot(w.n, v) > 1e-6).sort((a, b) => dep(a.c) - dep(b.c)).forEach(w => o.push(poly(w.p, lit(w.col, w.n, 0.92), '#8c836f', 0.5)));
+  g.tops.forEach(t => o.push(poly(t.p, lit(t.col, [0, 0, 1]), '#b9b19c', 0.4)));
+  // shadows on the roof
+  if (live && live.up) {
+    o.push('<g clip-path="url(#c3)">');
+    live.hulls.forEach(h => o.push(poly(h.map(p => [p[0], p[1], 0.02]), 'rgba(0,0,0,0.30)')));
+    live.rows.forEach(h => o.push(poly(h.map(p => [p[0], p[1], 0.02]), 'rgba(0,0,0,0.16)')));
+    o.push('</g>');
+  }
+  // objects, far to near
+  const pool = g.pool.slice().sort((a, b) => dep(a.c) - dep(b.c));
+  for (const ob of pool) {
+    const shaded = ob.kind === 'panel' && live && live.up && (live.frac[ob.m.id] || 0) > 0.05;
+    for (const f of ob.faces) {
+      if (vdot(f.n, v) <= 1e-6) continue;
+      let col = f.col; if (shaded && f.plate) col = [78, 90, 112];
+      if (ob.kind === 'tree') { o.push(poly(f.p, lit(col, f.n, 1), '#2f6b2b', 0.6).replace('/>', ' fill-opacity="0.22" stroke-opacity="0.6"/>')); continue; }
+      o.push(poly(f.p, lit(col, f.n, f.plate ? 1.15 : 1), ob.kind === 'panel' && f.plate && V3.strings ? COL[ob.str % COL.length] : '#3b3b38', ob.kind === 'panel' && f.plate ? 1.6 : 0.5));
+      if (f.plate) {
+        const L0 = ob.L0, L1 = ob.L1, H0 = ob.H0, at = (a, b) => [L0[0] + (L1[0] - L0[0]) * a + (H0[0] - L0[0]) * b, L0[1] + (L1[1] - L0[1]) * a + (H0[1] - L0[1]) * b, L0[2] + (H0[2] - L0[2]) * b];
+        let d = ''; for (let i = 1; i < 12; i++) { const p1 = pr(at(i / 12, 0)), p2 = pr(at(i / 12, 1)); d += 'M' + p1.join(' ') + 'L' + p2.join(' '); } for (let j = 1; j < 6; j++) { const p1 = pr(at(0, j / 6)), p2 = pr(at(1, j / 6)); d += 'M' + p1.join(' ') + 'L' + p2.join(' '); }
+        o.push('<path d="' + d + '" stroke="rgba(190,210,240,0.45)" stroke-width="0.5" fill="none"/>');
+      }
+    }
+  }
+  // labels, cable entry, compass
+  g.labels.forEach(l => { const p = pr([l.p[0], l.p[1], l.p[2] + 0.2]); o.push('<text x="' + p[0] + '" y="' + p[1] + '" font-size="12" text-anchor="middle" fill="#222" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial">' + h(l.t) + '</text>'); });
+  if (R.entry) { const a = pr([R.entry[0], R.entry[1], 0]), b = pr([R.entry[0], R.entry[1], 1.6]); o.push('<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#111" stroke-width="2"/><circle cx="' + b[0] + '" cy="' + b[1] + '" r="6" fill="#fff" stroke="#111" stroke-width="2"/><text x="' + (+b[0] + 10) + '" y="' + (+b[1] + 4) + '" font-size="11" fill="#111" stroke="#fff" stroke-width="3" paint-order="stroke" font-family="Arial">cable entry</text>'); }
+  const na = cfg.northAngle * D, n3 = [Math.sin(na), Math.cos(na), 0], nx = vdot(n3, r), ny = -vdot(n3, u), nl = Math.hypot(nx, ny) || 1, cx = W - 50, cy = 52;
+  o.push('<circle cx="' + cx + '" cy="' + cy + '" r="28" fill="#fff" fill-opacity="0.85" stroke="#999"/><line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + nx / nl * 20 * Math.min(1, nl * 1.2)).toFixed(1) + '" y2="' + (cy + ny / nl * 20 * Math.min(1, nl * 1.2)).toFixed(1) + '" stroke="#a1262b" stroke-width="3"/><text x="' + (cx + nx / nl * 36 - 4).toFixed(1) + '" y="' + (cy + ny / nl * 36 + 4).toFixed(1) + '" font-size="12" font-weight="700" fill="#a1262b" font-family="Arial">N</text>');
+  if (live) o.push('<text x="16" y="' + (H - 14) + '" font-size="12" fill="#333" font-family="Arial">' + (live.up ? dayLabel(V.doy) + ', ' + tLabel() + ', sun ' + live.alt.toFixed(0) + ' deg ' + compass(live.bearing) : 'Sun is below the horizon') + '</text>');
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" font-family="Arial, sans-serif" role="img" aria-label="3D view of the roof, panels and ballast">' + o.join('') + '</svg>';
+}
+function tab3d() {
+  const tg = (k, l) => '<label class="chk"><input type="checkbox" data-v3="' + k + '"' + (V3[k] ? ' checked' : '') + '> ' + l + '</label>';
+  const sl = (k, l, min, max, st, val) => '<label class="f"><span class="l">' + l + '</span><input type="range" data-s3="' + k + '" min="' + min + '" max="' + max + '" step="' + st + '" value="' + val + '"></label>';
+  if (V3.az == null) V3.az = faceAz() + 25;
+  return '<div class="panelbox"><h2>3D view</h2>' +
+    '<div class="tool"><div class="btns">' + [['Front', 0, 28], ['Corner', 25, 32], ['Right', 90, 28], ['Back', 180, 28], ['Left', 270, 28], ['Top', 0, 88]].map(b => '<button class="btn sm" type="button" data-act="view3d" data-a="' + b[1] + '" data-e="' + b[2] + '">' + b[0] + '</button>').join('') + '</div>' + tg('ballast', 'Ballast blocks') + tg('shadows', 'Sun and shadows') + tg('strings', 'Colour by string') + '</div>' +
+    '<div class="card" style="margin-bottom:10px"><div class="grid3">' + sl('az', 'Rotate', 0, 360, 1, Math.round(V3.az % 360)) + sl('el', 'Tilt of view', 5, 88, 1, V3.el) + sl('zoom', 'Zoom', 0.6, 2.6, 0.05, V3.zoom) + '</div>' +
+    (V3.shadows ? liveControls() : '') + '</div>' +
+    '<div class="sheet" id="out3d" style="touch-action:pan-y;cursor:grab"></div>' +
+    '<p class="note" style="margin-top:8px">Drag the picture sideways to rotate it. Panels are shown on their tilted frames with ' + R.blocks + ' ballast blocks resting on the roof. Dark panels are in shade at the chosen time. Roof walls and the parapet are drawn for context. Order of drawing is approximate where objects touch.</p></div>';
+}
+let rafId = 0;
+function fill3d() {
+  const el = $('#out3d'); if (!el || !R || !R.N) return;
+  cancelAnimationFrame(rafId); rafId = requestAnimationFrame(() => {
+    const e2 = $('#out3d'); if (!e2) return; e2.innerHTML = render3D();
+    const dl = $('#dayLab'); if (dl) dl.textContent = dayLabel(V.doy); const hl = $('#hrLab'); if (hl) hl.textContent = tLabel();
+  });
+  if (!el.dataset.bound) {
+    el.dataset.bound = '1'; let dr = null;
+    el.addEventListener('pointerdown', e => { dr = { x: e.clientX, y: e.clientY }; try { el.setPointerCapture(e.pointerId); } catch (x) { } el.style.cursor = 'grabbing'; });
+    el.addEventListener('pointermove', e => { if (!dr) return; V3.az = (V3.az - (e.clientX - dr.x) * 0.5 + 720) % 360; if (e.pointerType === 'mouse') V3.el = Math.max(5, Math.min(88, V3.el + (e.clientY - dr.y) * 0.35)); dr = { x: e.clientX, y: e.clientY }; const a = $('[data-s3="az"]'), b = $('[data-s3="el"]'); if (a) a.value = Math.round(V3.az); if (b) b.value = Math.round(V3.el); fill3d(); });
+    const end = () => { dr = null; el.style.cursor = 'grab'; }; el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  }
+}
+function refreshViews() { fillLayout(); fill3d(); }
+
+/* ---------------- drill or not ---------------- */
+function tabMount() {
+  const L = R.load, verdict = L <= 60 ? ['ok', 'No-drill looks comfortable on this layout.', 'The added load is at or under the planning comfort level of 60 kg/m2. A structural engineer still signs off the slab.'] : L <= 100 ? ['warn', 'No-drill is possible, but the slab must be checked.', 'The added load is between 60 and 100 kg/m2. Ask the engineer for the slab capacity first. Fewer panels, a lower tilt or wind deflectors reduce the blocks.'] : ['fail', 'Think about drilled pedestals or fewer panels.', 'Above 100 kg/m2 the ballast is heavy for most terraces. Drilling a few sealed pedestals can cut the weight a lot, but it puts holes in the waterproofing.'];
+  let st = null; try { st = compute(Object.assign({}, S, { cpEdge: Math.max(0.8, S.cpEdge) })); } catch (e) { }
+  const cls = verdict[0];
+  const row = (a, b, c, d, e, f) => '<div class="card"><b>' + a + '</b><div class="grid2" style="gap:6px 14px">' + [['Holes in the roof', b], ['Extra weight', c], ['Wind safety', d], ['Leak risk', e], ['Easy to remove', f]].map(x => '<div class="mini"><span style="color:var(--ink3)">' + x[0] + '</span><br>' + x[1] + '</div>').join('') + '</div></div>';
+  const steps = a => '<ol style="margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px">' + a.map(x => '<li>' + x + '</li>').join('') + '</ol>';
+  return '<div class="panelbox"><h2>Drill or not: what suits this roof</h2><div class="ck ' + cls + '"><span class="ic">' + IC[cls] + '</span><div><b>' + verdict[1] + '</b><p>' + verdict[2] + ' This plan: ' + fx(L, 0) + ' kg/m2 added, ' + R.blocks + ' blocks of ' + S.blockKg + ' kg, ' + R.nEdge + ' of ' + R.N + ' panels in the edge zone.</p></div></div>' +
+    (st && st.N ? '<p class="hint" style="margin-top:10px">Stress test: if the edge wind coefficient is 0.8 instead of ' + S.cpEdge + ', the load becomes ' + fx(st.load, 0) + ' kg/m2 and the blocks ' + st.blocks + '. Ask your supplier which value they will certify.</p>' : '') + '</div>' +
+
+    '<div class="panelbox"><h2>The ways to fix panels on a flat roof</h2><div style="display:flex;flex-direction:column;gap:8px">' +
+    row('Ballast (no-drill): panels sit on frames, concrete blocks hold them down', 'None', 'Highest (about ' + fx(L, 0) + ' kg/m2 here)', 'Good if the blocks are sized for the edge zone', 'Lowest', 'Yes, lift the blocks and frames') +
+    row('Drilled pedestals: anchors in the slab, each sealed and waterproofed', 'One set per support', 'Lowest (frames and panels only, about 15 to 20 kg/m2)', 'Highest, fixed to the slab', 'Higher. Every hole is a place for a leak if sealed badly', 'Hard. The holes stay') +
+    row('Parapet clamps or brackets', 'Few or none, on the wall', 'Low', 'Limited. Only for strong parapets and small arrays', 'Low', 'Fairly easy') +
+    row('Hybrid: lighter ballast plus rows tied together and wind deflectors', 'None', 'Medium', 'Good', 'Lowest', 'Yes') + '</div>' +
+    '<p class="note" style="margin-top:8px">Weights and risks are typical for flat concrete terraces. Your engineer and supplier give the final numbers.</p></div>' +
+
+    '<div class="panelbox"><h2>Doing it without drilling</h2>' + steps([
+      'Check the slab first. A structural engineer confirms it can carry about ' + fx(L * 1.25, 0) + ' kg/m2 extra (the planner load plus a 25 % margin).',
+      'Make sure the waterproofing is sound before anything goes on. Redo it first if it is old or cracked. A new coat later means lifting everything.',
+      'Put an 8 mm EPDM pad under every frame foot and under every block. This protects the waterproofing and stops sliding.',
+      'Use the block count from the Structure tab. Edge and corner panels get more blocks because the wind pulls hardest there.',
+      'Tie the rows together and fit the supplier\'s wind deflector or back skirt if they have a tested kit. This can cut the blocks a lot.',
+      'Ask the supplier to check sliding and overturning for wind and for earthquake. Much of India is in seismic zone III or higher.',
+      'Keep rain-water outlets and drains free. Leave a walking path of about 0.6 m between the array and the edge.',
+      'Look at the roof after each storm and each monsoon. Check that blocks and pads have not moved.']) +
+    '<h3>Bringing the cable down without a hole in the slab</h3>' + steps([
+      'Best: use an existing duct or shaft from the terrace to the meter board.',
+      'Next: run the cable in a UV-resistant conduit over the parapet and down the outside wall. No hole at all.',
+      'If a hole cannot be avoided, core a small sleeve through a wall (stair-cabin wall or parapet wall), never the slab. Seal it with fire-stop and sealant.']) + '</div>' +
+
+    '<div class="panelbox"><h2>If you decide to drill</h2><p class="hint">Only do this if the slab cannot take the ballast. It is done safely, but each hole needs care.</p>' + steps([
+      'Scan the slab for steel bars first (rebar scanner). Never cut a main bar. Keep anchors well away from slab edges and beams.',
+      'Do not anchor straight into the bare slab. Build a small concrete pedestal on top of the finished slab and anchor the frame to that.',
+      'Use stainless or hot-dip galvanised anchors, chemical (epoxy) type, with depth and spacing set by the anchor maker and your engineer.',
+      'Seal every pedestal: waterproof coat over the base and up the sides, with a fabric reinforcement at the joint. The waterproofing contractor signs this off.',
+      'Flood-test the roof for 48 hours before the panels go on.',
+      'Test a few sample anchors by pulling them. Record the results with the drawings.',
+      'Check that the roof waterproofing warranty is not cancelled by the work, and get the new warranty in writing.',
+      'Keep a drawing of where every anchor is. It matters for future repairs.']) + '</div>';
+}
+
+/* ---------------- checklist ---------------- */
+const CLR = [
+  ['Documents', [
+    ['r1', 'Terrace plan and last 12 months of electricity bills', 'Plan gives geometry; bills give the units for right-sizing.'],
+    ['r2', 'Sanctioned load and meter type (single or three-phase)', 'On the bill. Above about 5 kW the discom usually expects three-phase.'],
+    ['r3', 'Ownership proof, and society or neighbour consent if shared roof', 'Needed for the net-metering application.']]],
+  ['Survey on the roof', [
+    ['r4', 'Waterproofing: age, cracks, ponding', 'Fix or renew before panels go on. Ballast must sit on pads over sound waterproofing.'],
+    ['r5', 'Drain outlets and slope', 'Keep drains and rain-water pipes clear of blocks. Leave walking paths.'],
+    ['r6', 'Measure the actual obstacles and parapet', 'Stair cabin, tank, antennas, parapet height. Update section 1 and re-check shadows.'],
+    ['r7', 'Neighbouring buildings and trees that shade in winter', 'The planner models only what you enter.'],
+    ['r8', 'Lifting route for 34 kg panels and 25 kg blocks', 'Stair width, or a hoist over the parapet.']]],
+  ['Structure', [
+    ['r9', 'Structural engineer certifies the slab for the planner load', 'See the Structure tab. Ask for the original design load if drawings exist.'],
+    ['r10', 'Signed wind-load calculation from the structure supplier', 'IS 875-3. Replace the assumed coefficients.']]],
+  ['Electrical', [
+    ['r11', 'Main DB has a spare way and a sound busbar and earth', 'The planner adds one breaker labelled SOLAR.'],
+    ['r12', 'Cable path from roof to main DB without drilling the slab', 'Through the stair-cabin wall or the parapet wall in a sleeve, then a surface conduit or tray.'],
+    ['r13', 'Space for inverter in shade with airflow, near the meter board', 'Shorter AC cable, easier monitoring.'],
+    ['r14', 'Three earth pits located and clear', 'Check soil and access.']]],
+  ['Approvals and commissioning', [
+    ['r15', 'Net-metering application and technical feasibility approval before buying', 'Apply as your electricity company directs. Do not order inverters first.'],
+    ['r16', 'Installer provides the single-line diagram, test reports and warranty papers', 'Insist on string Voc and insulation tests recorded.'],
+    ['r17', 'Net meter installed and sealed, then commissioning certificate', 'Only then switch the system on for export.']]]
+];
+const CLN = [
+  ['Structure and roof', [
+    ['n1', 'Design the terrace slab for the extra load', 'Ask your structural engineer to allow at least the planner load plus a margin on the solar zone. See the numbers above.'],
+    ['n2', 'Plan a clear, flat solar zone facing south', 'Tallest items (stair cabin, tank) on the north side of the roof so they do not shade the array.'],
+    ['n3', 'Waterproofing and protective screed or tile over the whole solar zone', 'A good membrane plus a protective layer means pads and blocks cannot damage it.'],
+    ['n4', 'Parapet about 1 m high, drains outside the array zone', 'Parapet also cuts wind at the edges.']]],
+  ['Conduits and boxes built in', [
+    ['n5', 'Two 50 mm conduits from the terrace to the main DB room', 'One for DC and AC power, one spare. Inside a duct or column, never through the slab bottom. Leave pull wires.'],
+    ['n6', 'One 25 mm spare conduit for monitoring and an EV charger', 'Cheap now, painful later.'],
+    ['n7', 'Wall space for DC box, AC box and inverter in a shaded, ventilated spot', 'Near the meter board if possible.'],
+    ['n8', 'Spare breaker way and a three-phase connection', 'Allows 5 kW and above, and an EV charger later.']]],
+  ['Earthing and lightning', [
+    ['n9', 'Three earth pit locations with chambers', 'Structure and DC, inverter and AC, lightning mast.'],
+    ['n10', 'Mast base and down-conductor path planned', 'A cast-in plate on the roof removes drilling later.']]],
+  ['Paperwork', [
+    ['n11', 'Mention rooftop solar in the building approval and electrical drawings', 'Smooths the net-metering application.']]]
+];
+const CLF = [['Society (flats or tower)', [
+    ['f1', 'Written society resolution for the common terrace', 'Name who signs for the society and who owns the system.'],
+    ['f2', 'Decide: common meter or units shared to flats', 'Group or virtual net metering, where your electricity company allows it.'],
+    ['f3', 'Fire-exit paths, tank access and lift machine room kept clear', 'Mark them on the plan before layout.'],
+    ['f4', 'Structural check of the roof slab by the society engineer', 'Tanks and lift rooms already load the slab.'],
+    ['f5', 'Wind design for the building height', 'Above about 30 m, ask for an anchored or elevated frame.'],
+    ['f6', 'Who maintains it, who pays, and how savings are shared', 'Put it in the resolution.']]]];
+function tabCheck(noRoof) {
+  const mode = S.mode === 'new' ? 'new' : 'retro';
+  let o = '';
+  if (mode === 'new' && R && R.N) {
+    o += '<div class="panelbox"><h2>What this plan asks of your new home</h2><div class="scroll"><table><tbody>' +
+      '<tr><td>Reserve a clear solar zone of about</td><td class="n">' + fx(R.footprint, 0) + ' m2</td></tr>' +
+      '<tr><td>Design the slab for extra load of at least</td><td class="n">' + fx(R.load * 1.25, 0) + ' kg/m2 (planner ' + fx(R.load, 0) + ' + 25 %)</td></tr>' +
+      '<tr><td>Conduit length terrace to main DB room</td><td class="n">about ' + (S.acRun + S.dbRun) + ' m</td></tr>' +
+      '<tr><td>Supply for ' + fx(R.kWp, 1) + ' kWp</td><td class="n">' + (R.kWp > 5 ? 'Three-phase' : 'Single or three-phase') + '</td></tr>' +
+      '<tr><td>Inverter wall space</td><td class="n">0.6 m x 0.6 m, shaded, 1 m clear in front</td></tr></tbody></table></div></div>';
+  }
+  const groups = (mode === 'new' ? CLN : CLR).concat(S.bldgType === 'flats' ? CLF : []);
+  const total = groups.reduce((t, g) => t + g[1].length, 0), done = groups.reduce((t, g) => t + g[1].filter(i => CL[i[0]]).length, 0);
+  o += '<div class="panelbox cl"><h2>' + (mode === 'new' ? 'Solar-ready checklist for a new home' : 'Retrofit checklist for an existing home') + '</h2><p class="mini">' + done + ' of ' + total + ' ticked. Switch between the two lists with the buttons at the top.</p>' +
+    groups.map(g => '<h3>' + g[0] + '</h3>' + g[1].map(i => '<label><input type="checkbox" data-cl="' + i[0] + '"' + (CL[i[0]] ? ' checked' : '') + '><span><b>' + i[1] + '</b><em>' + i[2] + '</em></span></label>').join('')).join('') + '</div>';
+  if (noRoof && (err || !R || R.empty)) o = '<div class="panelbox"><h2>Start with the roof</h2><p class="hint">Add roof rectangles on the left or load the example terrace. The results appear here. The checklist below works already.</p></div>' + o;
+  return o;
+}
+
+/* ---------------- vendors ---------------- */
+function briefLines() {
+  const st = stateOf(), sv = S.survey || {}, L = [];
+  const trees = (R.cfg.obstacles || []).filter(o => o.tree || /\btree\b/i.test(o.name || ''));
+  L.push(['Project', (S.name || 'Rooftop solar') + '. ' + (S.bldgType === 'flats' ? 'Flats or tower, ' + S.floors + ' floors, ' + S.flats + ' flats. ' : 'Individual home. ') + S.city + ', ' + st[0] + '. Electricity company: ' + st[2] + '.']);
+  L.push(['System', fx(R.kWp, 2) + ' kWp: ' + R.N + ' panels of about ' + R.panel.Wp + ' W (' + R.panel.name + ' or equal), ' + S.tilt + ' deg tilt, facing ' + fx(R.facingBearing, 0) + ' deg. Inverter about ' + (R.inv ? R.inv.ac + ' kW ' + R.inv.ph + '-phase with ' + R.inv.mppt + ' MPPT inputs' : 'to suit') + '; ' + R.strings.length + ' strings.' + (S.subsidy ? ' Subsidy wanted (DCR panels on the approved list).' : ' Subsidy not needed; best panel quality preferred.')]);
+  L.push(['Mounting', (sv.drill === 'yes' ? 'Anchoring allowed if waterproofed.' : 'No drilling. Ballast frame, hot-dip galvanised.') + ' Written wind calculation to IS 875-3 for basic wind ' + S.Vb + ' m/s at ' + S.bldgH + ' m. Planner estimate: ' + R.blocks + ' blocks of ' + S.blockKg + ' kg, about ' + fx(R.load, 0) + ' kg/m2 added; slab check needed.']);
+  L.push(['Edges', SIDES.map(sd => { const e = edgeOf(S, sd); return compassName(sideBearing(sd)).split(' (')[0] + ': ' + (e.kind === 'wall' ? 'solid wall ' + e.h + ' m' : e.kind === 'railing' ? 'railing on a ' + e.h + ' m kerb' : 'open') ; }).join('; ') + '.']);
+  L.push(['Shade', (trees.length ? trees.length + ' tree(s) near the roof; planner shade about ' + Math.round((R.yearShade || 0) * 100) + ' % of panel area over a year. Keep panels out of tree shade; propose panel-level optimisers if any panel stays shaded.' : 'Planner shade about ' + Math.round((R.yearShade || 0) * 100) + ' % of panel area over a year.')]);
+  L.push(['Roof', sv.roofCond === 'good' ? 'Good condition.' : sv.roofCond === 'stains' ? 'Stains or old damp marks: scrub and check waterproofing before installing.' : sv.roofCond === 'leaks' ? 'Leaks now: waterproofing repair first.' : 'Condition to be checked on the site visit.']);
+  L.push(['Electrical', (S.supply === '1' ? 'Single' : 'Three') + '-phase supply. Cable run about ' + S.acRun + ' m roof to inverter, ' + S.dbRun + ' m to main board. Net meter application with ' + st[2] + ' by the vendor. Earthing and lightning protection included.']);
+  L.push(['Please send', 'Panel and inverter datasheets with model numbers; frame drawing and signed wind calculation; slab check; year-one units in writing; all warranties; service and cleaning plan for 5 years; payment schedule.']);
+  return L;
+}
+const VQ = [['vq1', 'Exact panel model and datasheet; on the approved list (ALMM)?'], ['vq2', 'Inverter model, MPPT inputs, and how it handles shade'], ['vq3', 'Frame drawing, block count and weight, signed wind calculation'], ['vq4', 'Who checks the slab, and who pays if waterproofing is damaged'], ['vq5', 'Year-one units in writing, and what happens if it falls short'], ['vq6', 'Warranties: panel product and output, inverter, frame, workmanship'], ['vq7', 'Who files the net-meter papers, and how long it takes'], ['vq8', 'Cleaning and service visits for 5 years, and their cost']];
+const VR = ['A price per kW with no panel or inverter model named', 'Says drilling is needed on a flat concrete roof, or offers ballast with no wind calculation', 'Ignores the trees, or puts panels in their shade', 'Unrated on the PM Surya Ghar portal (under 50 installations) and no local roofs to visit', 'A large advance before the materials reach your roof'];
+function tabVendors() {
+  const st = stateOf();
+  return '<div class="panelbox"><h2>Pick three vendors, give them one brief</h2><p class="hint">Get three written quotes against the same brief: one national brand, one company from your state, and the best-rated local vendor. Lists change, so use the official one.</p>' +
+    '<ol style="margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:13px">' +
+    '<li><b>Official list.</b> Log in at <a href="https://pmsuryaghar.gov.in" target="_blank" rel="noopener">pmsuryaghar.gov.in</a> with your state, electricity company (' + h(st[2]) + ') and consumer number. It lists registered vendors for your area with ratings.</li>' +
+    '<li><b>Read the rating.</b> Under 50 portal installations = unrated. Tier III (50 to 250) is rated on feedback only. Tier II and I (over 250, over 1,500) also get site inspections. Prefer Tier I or II.</li>' +
+    '<li><b>State agency.</b> In ' + h(st[0]) + ' that is ' + h(st[1]) + '; some agencies publish their own ratings.</li>' +
+    '<li><b>National installers</b> such as Tata Power Solaroof and SolarSquare work in most states through local teams: ask who will actually do your roof.</li>' +
+    '<li><b>Visit</b> one of their roofs that is over two years old.</li></ol></div>' +
+    '<div class="panelbox"><h2>Your brief</h2><p class="mini">Made from this design. Copy it into WhatsApp or email, or save it from the Export tab.</p><div class="scroll"><table><tbody>' + briefLines().map(l => '<tr><td style="white-space:nowrap"><b>' + l[0] + '</b></td><td>' + h(l[1]) + '</td></tr>').join('') + '</tbody></table></div>' +
+    '<div class="btns" style="margin-top:8px"><button class="btn sm" type="button" data-act="copy-brief">Copy brief</button></div><textarea id="briefBox" rows="2" hidden aria-label="Brief text"></textarea></div>' +
+    '<div class="panelbox cl"><h2>Ask every vendor</h2>' + VQ.map(q => '<label><input type="checkbox" data-cl="' + q[0] + '"' + (CL[q[0]] ? ' checked' : '') + '><span><b>' + q[1] + '</b></span></label>').join('') +
+    '<h3>Red flags</h3><ul style="margin:0;padding-left:20px;font-size:13px;display:flex;flex-direction:column;gap:4px">' + VR.map(r => '<li>' + r + '</li>').join('') + '</ul></div>';
+}
+const briefText = () => 'ROOFTOP SOLAR BRIEF\n' + briefLines().map(l => l[0] + ': ' + l[1]).join('\n');
+function briefHTML() {
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rooftop solar brief</title><style>body{font:14px/1.5 Arial,Helvetica,sans-serif;max-width:860px;margin:24px auto;padding:0 16px;color:#111}td{border:1px solid #bbb;padding:6px 8px;vertical-align:top}table{border-collapse:collapse;width:100%}svg{width:100%;height:auto;border:1px solid #ccc}</style></head><body><h1>Rooftop solar brief</h1><p>' + new Date().toLocaleDateString('en-IN') + ' \u00b7 planning grade, to be confirmed on a site visit</p><table>' +
+    briefLines().map(l => '<tr><td><b>' + l[0] + '</b></td><td>' + h(l[1]) + '</td></tr>').join('') + '</table><h2>Planned layout</h2>' + planView(R, { shadows: true, strings: true, ballast: true, W: 900 }) +
+    '<h2>Please answer</h2><ol>' + VQ.map(q => '<li>' + q[1] + '</li>').join('') + '</ol></body></html>';
+}
+
+/* ---------------- export ---------------- */
+function tabExport() {
+  const ok = canSave();
+  const b = (a, t, d) => '<div class="card"><div class="hd"><b>' + t + '</b><button class="btn sm pri" type="button" data-act="' + a + '"' + (ok ? '' : ' disabled') + '>Save</button></div><p class="note">' + d + '</p></div>';
+  return '<div class="panelbox"><h2>Export for your contractor</h2>' + (ok ? '' : '<p class="msg">Saving files is not available in this view. You can still copy the project text from section 5 on the left.</p>') +
+    '<div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:10px">' +
+    b('x-brief', 'Vendor brief (HTML)', 'One page for vendors: system, mounting, edges, shade, roof, questions, and the layout.') +
+    b('x-report', 'Full report (HTML)', 'Summary, checks, layout, wiring, single-line, structure, BOM. Open in a browser and print to PDF.') +
+    b('x-plan', 'Layout drawing (SVG)', 'Plan with panels, strings and ballast counts.') +
+    b('x-3d', '3D view (SVG)', 'The current 3D picture, with the date and time you chose.') +
+    b('x-wire', 'Wiring drawing (SVG)', 'Plan with string home runs.') +
+    b('x-sld', 'Single-line diagram (SVG)', 'Strings, inverter, AC box, meter, earthing.') +
+    b('x-bom', 'Bill of materials (CSV)', 'Opens in Excel or Sheets.') +
+    b('x-json', 'Project file (JSON)', 'Reload later with section 5.') + '</div></div>';
+}
+function bomCSV() {
+  const q = s => '"' + String(s).replace(/"/g, '""') + '"';
+  return 'Item,Quantity,Low (Rs),High (Rs)\n' + R.bom.map(b => [q(b.i), q(b.q), Math.round(b.lo), Math.round(b.hi)].join(',')).join('\n') + '\n' + ['Total', '', Math.round(R.costLo), Math.round(R.costHi)].join(',') + '\n';
+}
+function reportHTML() {
+  const css = 'body{font:14px/1.5 Arial,Helvetica,sans-serif;max-width:1000px;margin:24px auto;padding:0 16px;color:#111}h1{font-size:22px;margin:0}h2{font-size:16px;margin-top:30px;border-bottom:2px solid #333;padding-bottom:4px}table{border-collapse:collapse;width:100%;font-size:12.5px;margin:8px 0}td,th{border:1px solid #bbb;padding:4px 7px;text-align:left}th{background:#eee}svg{width:100%;height:auto;border:1px solid #ccc;margin:8px 0}.ok{color:#1d7a46}.warn{color:#8a5a00}.fail{color:#a1262b;font-weight:700}small{color:#555}@media print{h2{break-after:avoid}svg,table{break-inside:avoid}}';
+  const sOf = new Map(); (R.strings || []).forEach((s, k) => s.mods.forEach(m => sOf.set(m, k + 1)));
+  const t = (head, rows) => '<table><thead><tr>' + head.map(x => '<th>' + x + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map(x => '<td>' + x + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Solar layout report</title><style>' + css + '</style></head><body>' +
+    '<h1>Rooftop solar layout report</h1><small>' + h(S.name || 'Project') + ' | ' + (S.mode === 'new' ? 'New home' : 'Retrofit') + ' | ' + new Date().toLocaleDateString('en-IN') + ' | planning grade, to be verified on site</small>' +
+    (S.notes && String(S.notes).trim() ? '<h2>Site notes</h2><p style="white-space:pre-wrap">' + h(S.notes) + '</p>' : '') +
+    '<h2>Site survey: ' + R.survey.score + ' of ' + R.survey.n + ' sure (units \u00b1' + Math.round(R.survey.band * 100) + ' %)</h2>' + t(['Result', 'Input', 'Note'], R.survey.items.map(c => ['<span class="' + c.lvl + '">' + c.lvl.toUpperCase() + '</span>', h(c.t), h(c.d)])) +
+    '<h2>1. System</h2>' + t(['Item', 'Value'], [
+      ['Size', fx(R.kWp, 2) + ' kWp (' + R.N + ' x ' + R.panel.Wp + ' W, ' + h(R.panel.name) + ')'],
+      ['Inverter', R.inv ? R.inv.ac + ' kW ' + R.inv.ph + '-phase, DC/AC ' + fx(R.dcac, 2) : 'none fits'],
+      ['Tilt and direction', S.tilt + ' deg, facing ' + fx(R.facingBearing, 0) + ' deg (south = 180), ' + S.orient],
+      ['Row pitch', fx(R.pitch, 2) + ' m'], ['Generation', Math.round(R.gen) + ' kWh a year, likely ' + Math.round(R.genLo) + ' to ' + Math.round(R.genHi) + ' (' + S.yieldKwp + ' kWh/kWp planning yield, ' + Math.round((R.yearShade || 0) * 100) + ' % shade over a year)'], ['Edges', SIDES.map(sd => { const e = edgeOf(S, sd); return SIDE_LAB[sd] + ': ' + e.kind + ' ' + e.h + ' m'; }).join('; ')], ['Subsidy counted', inr(R.subsidy || 0)],
+      ['Added roof load', fx(R.load, 0) + ' kg/m2, ' + R.blocks + ' blocks of ' + S.blockKg + ' kg'], ['Indicative cost', inr(R.costLo) + ' to ' + inr(R.costHi)]]) +
+    '<h2>2. Checks</h2>' + t(['Result', 'Check', 'Note'], R.checks.slice().sort((a, b) => ORD[a.lvl] - ORD[b.lvl]).map(c => ['<span class="' + c.lvl + '">' + c.lvl.toUpperCase() + '</span>', h(c.t), h(c.d)])) +
+    '<h2>3. Panel layout</h2>' + planView(R, { shadows: true, strings: true, ballast: true, W: 980 }) +
+    '<h2>4. DC wiring</h2>' + planView(R, { shadows: false, strings: true, ballast: false, wires: true, W: 980 }) +
+    t(['String', 'Panels', 'MPPT', 'Voc cold', 'Vmp hot', 'Cable', 'Loop', 'Drop'], (R.strings || []).map((s, i) => ['S' + (i + 1), s.len, s.mppt, fx(s.voc, 0) + ' V', fx(s.vmpH, 0) + ' V', s.area + ' mm2', fx(s.loop, 0) + ' m', fx(s.dvPct, 2) + ' %'])) +
+    (R.inv ? t(['AC item', 'Value'], [['Inverter output current', fx(R.Iac, 1) + ' A'], ['Inverter to AC box', R.acCores + ' x ' + R.ac.A + ' mm2, ' + S.acRun + ' m'], ['AC box to main DB', R.acCores + ' x ' + R.ac2.A + ' mm2, ' + S.dbRun + ' m'], ['AC breaker', R.mcb + ' A'], ['DC isolator rating', R.isoV + ' V']]) : '') +
+    '<h2>5. Single-line diagram</h2>' + sldView(R) +
+    '<h2>6. Structure</h2><p>Design wind ' + fx(R.wind.Vz, 1) + ' m/s, pressure ' + fx(R.wind.pz, 2) + ' kN/m2. Coefficients interior ' + S.cpInt + ', edge ' + S.cpEdge + ' (assumed), factor of safety ' + S.fos + '. The structure supplier must supply a signed IS 875-3 calculation and a structural engineer must certify the slab.</p>' +
+    t(['Panel', 'String', 'Zone', 'Uplift', 'Blocks', 'Safety factor'], R.mods.map((m, i) => [i + 1, sOf.get(m) ? 'S' + sOf.get(m) : '-', m.edge ? 'Edge' : 'Interior', fx(m.uplift, 0) + ' kg', m.blocks, fx(m.fosAch, 2)])) +
+    '<h2>7. Bill of materials</h2>' + t(['Item', 'Quantity', 'Indicative cost'], R.bom.map(b => [h(b.i), h(b.q), b.lo || b.hi ? inr(b.lo) + ' to ' + inr(b.hi) : h(b.note || '-')]).concat([['<b>Total</b>', '', '<b>' + inr(R.costLo) + ' to ' + inr(R.costHi) + '</b>']])) +
+    '<p><small>Inverter data, city wind speeds, wind coefficients and prices are typical-class planning values. Replace them with datasheets, a signed wind calculation, a structural certificate and written quotes. This report does not replace a site survey, net-metering approval or the electrical inspector.</small></p></body></html>';
+}
+async function useCap(n) { try { const c = window.claude; if (!c || !c.use) return null; return await c.use(n); } catch (e) { return null; } }
+const STANDALONE = typeof window !== 'undefined' && !window.claude;
+const canSave = () => !!api.downloads || STANDALONE;
+async function saveFile(name, data) {
+  if (!api.downloads && STANDALONE) {
+    try { const type = /\.svg$/.test(name) ? 'image/svg+xml' : /\.csv$/.test(name) ? 'text/csv' : /\.json$/.test(name) ? 'application/json' : 'text/html'; const url = URL.createObjectURL(new Blob([data], { type: type + ';charset=utf-8' })); const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); toast('Saved ' + name); } catch (e) { toast('Could not save that file here.'); }
+    return;
+  }
+  if (!api.downloads) { toast('Saving files is not available in this view.'); return; }
+  try { await api.downloads.save({ filename: name, data }); toast('Saved ' + name); }
+  catch (e) { toast(e && e.code === 'declined' ? 'Not saved.' : e && e.code === 'rate_limited' ? 'One save at a time: answer the open prompt, then try again.' : 'Could not save that file here.'); }
+}
+let tt = 0;
+function toast(m) { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(() => { t.hidden = true; }, 4000); }
+
+/* ---------------- read plan with Claude ---------------- */
+let ctl = null;
+function faceFor(na) { const base = { down: 180, up: 0, right: 90, left: 270 }; let best = 'down', bd = 999; for (const k in base) { const b = (base[k] - na + 720) % 360, d = Math.abs(((b - 180 + 540) % 360) - 180); if (d < bd) { bd = d; best = k; } } return best; }
+function readMsg(t, cls) { $('#readMsg').innerHTML = t ? '<div class="msg ' + (cls || '') + '">' + t + '</div>' : ''; }
+async function readPlan() {
+  const f = $('#planFile').files[0];
+  if (!f) { readMsg('Choose an image of the plan first.', 'bad'); return; }
+  if (!api.sample) { readMsg('Reading drawings is not available in this view.', 'bad'); return; }
+  const note = ($('#planNote').value || '').slice(0, 2000);
+  const prompt = 'You are reading a flat-roof (terrace) plan image for a rooftop solar layout tool.\nReturn ONLY one JSON object of this shape:\n{"unit":"m","northAngle":0,"roof":[{"x":0,"y":0,"w":10,"h":8,"mode":"add"}],"obstacles":[{"name":"Stair cabin","x":0,"y":0,"w":3,"h":3,"h0":0,"h1":2.4,"solid":true}],"entry":null,"confidence":"medium","notes":"one or two short sentences"}\nRules:\n- unit is "m" or "ft", whichever the printed dimensions use (34\'-6" means 34.5 ft). If unsure use "m".\n- Coordinates: origin at the bottom-left corner of the whole roof outline as drawn, x to the right, y UP the page. Every rectangle is axis-aligned on the page: bottom-left corner (x,y), width w along x, depth h along y.\n- Describe the open terrace as the union of a few "add" rectangles (an L shape is two). Use "cut" only for holes inside an added rectangle.\n- obstacles are things standing on the terrace: staircase cabin or headroom (solid true, h0 0, h1 about 2.4 if unknown), overhead water tank on a stand (solid false, h0 stand height, h1 top height), lift room, chimney. Heights are in METRES always. Do not list parapets.\n- northAngle = degrees the north arrow points clockwise from straight up on the page; 0 if it points up or there is no arrow.\n- entry = {x,y} where cables can come down (a stair cabin wall or a duct) or null.\n- Use printed dimensions. If none, estimate from any scale and set confidence "low".\nUser notes: ' + (note || '(none)');
+  ctl = new AbortController(); $('#stopBtn').hidden = false; readMsg('Claude is reading the drawing. This can take up to a minute.');
+  try {
+    const d = await api.sample.json(prompt, { images: f, signal: ctl.signal });
+    applyRead(d);
+  } catch (e) {
+    const c = e && e.code;
+    if (c === 'cancelled') readMsg('Stopped.');
+    else if (c === 'not_granted' || c === 'sampling_disabled' || c === 'not_declared' || c === 'capability_disabled') readMsg('Claude is not available for this page. Enter the roof by hand in section 1.', 'bad');
+    else if (c === 'image_rejected') readMsg('That image could not be used. Try a JPG or PNG under 20 MB.', 'bad');
+    else if (c === 'rate_limited') readMsg('Too many requests or your usage limit is reached. Try again later.', 'bad');
+    else if (c === 'invalid_json' || c === 'empty_completion' || c === 'refused') readMsg('Claude could not turn that image into a roof. Try a clearer picture, or add notes with the dimensions.', 'bad');
+    else readMsg('The request failed. You can try again.', 'bad');
+  } finally { $('#stopBtn').hidden = true; ctl = null; }
+}
+function applyRead(d) {
+  const ok = v => typeof v === 'number' && isFinite(v);
+  const rect = r => r && ok(r.x) && ok(r.y) && ok(r.w) && ok(r.h) && r.w > 0 && r.h > 0;
+  const roof = (Array.isArray(d && d.roof) ? d.roof : []).filter(rect).map(r => ({ x: r.x, y: r.y, w: r.w, h: r.h, mode: r.mode === 'cut' ? 'cut' : 'add' }));
+  if (!roof.some(r => r.mode === 'add')) { readMsg('Claude found no roof rectangles in that image. Add notes with the dimensions and try again.', 'bad'); return; }
+  const obs = (Array.isArray(d.obstacles) ? d.obstacles : []).filter(rect).map(o => ({ name: String(o.name || 'Obstacle').slice(0, 40), x: o.x, y: o.y, w: o.w, h: o.h, h0: ok(o.h0) ? o.h0 : 0, h1: ok(o.h1) ? o.h1 : 2.4, solid: o.solid !== false }));
+  const ox = Math.min.apply(null, roof.map(r => r.x)), oy = Math.min.apply(null, roof.map(r => r.y));
+  const sh = r => Object.assign(r, { x: +(r.x - ox).toFixed(2), y: +(r.y - oy).toFixed(2) });
+  roof.forEach(sh); obs.forEach(sh);
+  S.unit = d.unit === 'ft' ? 'ft' : 'm'; S.roof = roof; S.obstacles = obs;
+  S.entry = d.entry && ok(d.entry.x) && ok(d.entry.y) ? { x: +(d.entry.x - ox).toFixed(2), y: +(d.entry.y - oy).toFixed(2) } : null;
+  S.northAngle = ok(d.northAngle) ? d.northAngle : 0; S.face = faceFor(S.northAngle);
+  persist(); rowsHTML(); syncInputs(true); update();
+  const fc = { down: 'bottom', up: 'top', left: 'left', right: 'right' }[S.face];
+  readMsg('<b>Done (' + h(d.confidence || 'unchecked') + ' confidence).</b> ' + h(String(d.notes || '').slice(0, 300)) + '<br>Panels set to face the ' + fc + ' of the plan. Check the Layout tab against your drawing and correct the numbers in section 1 where needed.', 'good');
+  V.tab = 'layout'; renderTab();
+}
+
+/* ---------------- events ---------------- */
+function convertUnits(to) {
+  if (S.unit === to) return; const k = to === 'ft' ? 1 / FT : FT, c = v => +(v * k).toFixed(2);
+  S.roof.forEach(r => { r.x = c(r.x); r.y = c(r.y); r.w = c(r.w); r.h = c(r.h); });
+  S.obstacles.forEach(o => { o.x = c(o.x); o.y = c(o.y); o.w = c(o.w); o.h = c(o.h); });
+  if (S.entry) S.entry = { x: c(S.entry.x), y: c(S.entry.y) };
+  S.unit = to;
+}
+function onInput(e) {
+  const t = e.target;
+  if (t.id === 'nsl') { S.kWp = +(num(t.value, 1) * (R ? R.panel.Wp : 625) / 1000).toFixed(3); persist(); update(); return; }
+  if (t.dataset.k) {
+    const k = t.dataset.k;
+    if (t.type === 'checkbox') S[k] = t.checked;
+    else if (t.type === 'number') { const v = parseFloat(t.value); if (!isFinite(v)) return; S[k] = v; }
+    else S[k] = t.value;
+    if (k === 'city') { const c = CITIES.find(x => x.n === t.value); if (c) { S.lat = c.lat; S.lon = c.lon; S.Vb = c.vb; S.yieldKwp = c.y; syncInputs(true); } }
+    if (k === 'panel') syncInputs(true);
+    if (k === 'floors' && S.bldgType === 'flats') { S.bldgH = Math.max(3, Math.round(S.floors) * 3); syncInputs(true); }
+    if (k === 'northAngle') rowsHTML();
+    persist(); update(); return;
+  }
+  if (t.dataset.sv) { S.survey = Object.assign({}, S.survey || {}); S.survey[t.dataset.sv] = t.type === 'checkbox' ? t.checked : t.type === 'number' ? parseFloat(t.value) : t.value; persist(); update(); return; }
+  if (t.dataset.edge) {
+    if (!S.edges) { S.edges = {}; SIDES.forEach(sd => { S.edges[sd] = edgeOf(S, sd); }); }
+    const e = S.edges[t.dataset.edge] = Object.assign({}, S.edges[t.dataset.edge]);
+    if (t.dataset.ef === 'kind') { e.kind = t.value; if (e.kind === 'wall' && e.h < 0.6) e.h = 1.0; if (e.kind === 'railing' && e.h > 0.6) e.h = 0.3; if (e.kind === 'none') e.h = 0; rowsHTML(); }
+    else { const v = parseFloat(t.value); if (!isFinite(v)) return; e.h = v; }
+    persist(); update(); return;
+  }
+  if (t.dataset.ph) {
+    const d = $('[data-ph="date"]').value, tm = $('[data-ph="time"]').value;
+    if (!d) { S.photo = null; persist(); update(); return; }
+    const dt = new Date(d + 'T00:00:00'), st = new Date(dt.getFullYear(), 0, 0), doy = Math.round((dt - st) / 864e5);
+    const hm = (tm || '12:00').split(':'), hour = (+hm[0]) + (+hm[1] || 0) / 60;
+    S.photo = { doy, hour, date: d, time: tm || '12:00', label: 'Photo time: ' + dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + ', ' + (tm || '12:00') + ' IST' };
+    persist(); update(); return;
+  }
+  if (t.dataset.c) { S.custom = Object.assign({}, PANELS.custom, S.custom || {}); const v = parseFloat(t.value); if (isFinite(v) && v > 0) { S.custom[t.dataset.c] = v; persist(); update(); } return; }
+  if (t.dataset.list) {
+    const o = S[t.dataset.list][+t.dataset.i]; if (!o) return; const f = t.dataset.f;
+    if (t.type === 'checkbox') o[f] = t.checked; else if (f === 'name' || f === 'mode') o[f] = t.value; else { const v = parseFloat(t.value); if (!isFinite(v)) return; o[f] = v; }
+    if (f === 'tree') { if (o.tree) { o.solid = false; if (o.trimTo == null) o.trimTo = Math.max(2, +(o.h1 * 0.7).toFixed(1)); } rowsHTML(); }
+    if (f === 'solid' && o.solid) o.tree = false;
+    if (f === 'mode' || f === 'solid') rowsHTML();
+    persist(); update(); return;
+  }
+  if (t.dataset.sl) { V[t.dataset.sl] = parseFloat(t.value); if (t.dataset.sl === 'doy') $$('[data-act="date"]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.d === V.doy))); refreshViews(); return; }
+  if (t.dataset.s3) { V3[t.dataset.s3] = parseFloat(t.value); fill3d(); return; }
+  if (t.dataset.v3) { V3[t.dataset.v3] = t.checked; if (t.dataset.v3 === 'shadows') renderTab(); else fill3d(); return; }
+  if (t.dataset.v && t.closest('#view')) { V[t.dataset.v] = t.checked; fillLayout(); return; }
+  if (t.dataset.cl) { CL[t.dataset.cl] = t.checked; try { localStorage.setItem(LSC, JSON.stringify(CL)); } catch (x) { } renderTab(); }
+}
+async function onClick(e) {
+  const seg = e.target.closest('[data-seg] button');
+  if (seg) {
+    const k = seg.parentNode.dataset.seg, v = seg.dataset.v;
+    if (k === 'unit') convertUnits(v); else S[k] = v;
+    if (k === 'bldgType' && v === 'flats') { S.bldgH = Math.max(S.bldgH, Math.round(S.floors || 3) * 3); }
+    persist(); if (k === 'unit') rowsHTML(); syncInputs(true); update(); return;
+  }
+  const tab = e.target.closest('[data-tab]'); if (tab) { V.tab = tab.dataset.tab; V.pick = false; renderTab(); return; }
+  const a = e.target.closest('[data-act]');
+  if (a) {
+    const act = a.dataset.act, u = S.unit === 'ft' ? 1 / FT : 1;
+    switch (act) {
+      case 'example': S = exampleState(); V.pick = false; break;
+      case 'clear': S = Object.assign(defaults(), { roof: [], obstacles: [], kWp: S.kWp, mode: S.mode, panel: S.panel, city: S.city, lat: S.lat, Vb: S.Vb, yieldKwp: S.yieldKwp }); break;
+      case 'add-roof': S.roof.push({ x: 0, y: 0, w: +(10 * u).toFixed(1), h: +(8 * u).toFixed(1), mode: 'add' }); break;
+      case 'add-cut': S.roof.push({ x: +(1 * u).toFixed(1), y: +(1 * u).toFixed(1), w: +(2 * u).toFixed(1), h: +(2 * u).toFixed(1), mode: 'cut' }); break;
+      case 'add-obs': S.obstacles.push({ name: 'Obstacle', x: 0, y: 0, w: +(2.5 * u).toFixed(1), h: +(3 * u).toFixed(1), h0: 0, h1: 2.4, solid: true, measured: false }); break;
+      case 'add-tree': { const b = R && R.addP && R.addP.length ? Math.max.apply(null, R.addP.map(r => r.x1)) / (S.unit === 'ft' ? FT : 1) : 10 * u; S.obstacles.push({ name: 'Tree (estimated)', tree: true, x: +(b + 1 * u).toFixed(1), y: 0, w: +(5 * u).toFixed(1), h: +(5 * u).toFixed(1), h0: 2.5, h1: 7, trimTo: 5, solid: false, measured: false }); break; }
+      case 'add-near': S.obstacles.push({ name: 'Neighbouring building', x: 0, y: +(-8 * u).toFixed(1), w: +(10 * u).toFixed(1), h: +(6 * u).toFixed(1), h0: 0, h1: 3, solid: true, measured: false }); toast('Placed below the plan. Move it to where the building is, and set its height above your roof.'); break;
+      case 'north-set': { const sv = S.survey || {}; const b = +sv.compass; if (!isFinite(b)) { toast('Enter the compass reading first.'); return; } S.northAngle = Math.round((((SIDE_DIR[sv.compassSide || 'top'] - b) % 360) + 360) % 360); S.survey = Object.assign({}, sv, { northMethod: 'compass' }); toast('North set: the top of the plan faces ' + compassName(sideBearing('top')) + '.'); break; }
+      case 'del': S[a.dataset.list].splice(+a.dataset.i, 1); break;
+      case 'auto-entry': S.entry = null; break;
+      case 'pick': V.pick = !V.pick; if (V.pick && V.tab !== 'layout') V.tab = 'layout'; persist(); renderTab(); return;
+      case 'view3d': V3.az = (faceAz() + +a.dataset.a) % 360; V3.el = +a.dataset.e; renderTab(); return;
+      case 'shmode': V.sh = a.dataset.m; V.pick = false; renderTab(); return;
+      case 'date': V.doy = +a.dataset.d; renderTab(); return;
+      case 'now': { const d = new Date(), st = new Date(d.getFullYear(), 0, 0); V.doy = Math.round((d - st) / 864e5); V.clock = true; V.hr = Math.max(5, Math.min(19.5, d.getHours() + d.getMinutes() / 60)); renderTab(); return; }
+      case 'photo': V.doy = S.photo.doy; V.hr = S.photo.hour; V.clock = true; renderTab(); return;
+      case 'basis': { const to = a.dataset.b === 'clock'; if (to !== V.clock) { V.hr = Math.max(5, Math.min(19.5, V.hr + (to ? -solarOff() : solarOff()))); V.clock = to; } renderTab(); return; }
+      case 'size': S.kWp = +a.dataset.kwp; break;
+      case 'copy-json': { const txt = JSON.stringify(S, null, 1), box = $('#jsonBox'); box.value = txt; try { await navigator.clipboard.writeText(txt); toast('Project copied.'); } catch (x) { box.select(); toast('Press Ctrl+C or Cmd+C to copy.'); } return; }
+      case 'load-json': { try { const o = JSON.parse($('#jsonBox').value); if (!o || !Array.isArray(o.roof) || !Array.isArray(o.obstacles)) throw 0; S = Object.assign(defaults(), o); toast('Project loaded.'); } catch (x) { toast('That text is not a project file.'); return; } break; }
+      case 'to-inputs': $('#inputs').scrollIntoView({ behavior: 'smooth', block: 'start' }); return;
+      case 'to-results': $('#kpis').scrollIntoView({ behavior: 'smooth', block: 'start' }); return;
+      case 'read': readPlan(); return;
+      case 'stop': if (ctl) ctl.abort(); return;
+      case 'x-report': if (R && R.N && R.inv) saveFile('solar-layout-report.html', reportHTML()); return;
+      case 'x-brief': if (R && R.N && R.inv) saveFile('solar-vendor-brief.html', briefHTML()); return;
+      case 'copy-brief': { const txt = briefText(), box = $('#briefBox'); try { await navigator.clipboard.writeText(txt); toast('Brief copied.'); } catch (x) { box.hidden = false; box.value = txt; box.select(); toast('Press Ctrl+C or Cmd+C to copy.'); } return; }
+      case 'x-plan': if (R && R.N && R.inv) saveFile('solar-layout.svg', planView(R, { shadows: true, strings: true, ballast: true, W: 1400 })); return;
+      case 'x-3d': if (R && R.N && R.inv) saveFile('solar-3d.svg', render3D(true)); return;
+      case 'x-wire': if (R && R.N && R.inv) saveFile('solar-wiring.svg', planView(R, { shadows: false, strings: true, ballast: false, wires: true, W: 1400 })); return;
+      case 'x-sld': if (R && R.N && R.inv) saveFile('solar-single-line.svg', sldView(R)); return;
+      case 'x-bom': if (R && R.N && R.inv) saveFile('solar-bom.csv', bomCSV()); return;
+      case 'x-json': saveFile('solar-project.json', JSON.stringify(S, null, 1)); return;
+      default: return;
+    }
+    persist(); rowsHTML(); syncInputs(true); update(); return;
+  }
+  const sh = e.target.closest('#sheet.pick');
+  if (sh && R && R.pv) {
+    const svg = sh.querySelector('svg'), pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse()), pv = R.pv, u = S.unit === 'ft' ? FT : 1;
+    S.entry = { x: +(((pv.x0 + (p.x - pv.pad) / pv.sc)) / u).toFixed(2), y: +(((pv.y0 + (pv.H - pv.pad - 56 - p.y) / pv.sc)) / u).toFixed(2) };
+    V.pick = false; persist(); update(); toast('Cable entry moved.');
+  }
+}
+
+/* ---------------- start ---------------- */
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && V.pick) { V.pick = false; renderTab(); } });
+document.addEventListener('input', onInput);
+document.addEventListener('change', onInput);
+document.addEventListener('click', onClick);
+buildInputs(); buildTabs(); run();
+document.addEventListener('change', e => { if (e.target.id !== 'projFile') return; const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { try { const o = JSON.parse(rd.result); if (!o || !Array.isArray(o.roof) || !Array.isArray(o.obstacles)) throw 0; S = Object.assign(defaults(), o); persist(); rowsHTML(); syncInputs(true); update(); toast('Project opened: ' + (S.name || 'untitled') + '.'); } catch (x) { toast('That file is not a project file.'); } }; rd.readAsText(f); });
+document.addEventListener('change', e => { if (e.target.id === 'planFile') { const f = e.target.files[0], im = $('#planThumb'); try { if (f) { im.src = URL.createObjectURL(f); im.hidden = false; } else im.hidden = true; } catch (x) { } } });
+(async () => {
+  api.downloads = await useCap('downloads'); if (V.tab === 'export') renderTab();
+  api.sample = await useCap('sample');
+  if (api.sample) { try { const l = await api.sample.limits(); api.imgs = l && l.images ? l.images : null; if (api.imgs) $('#planFile').accept = api.imgs.mediaTypes.join(','); } catch (e) { api.imgs = null; } }
+  derived();
+})();
+})();
+</script>
+</body></html>
